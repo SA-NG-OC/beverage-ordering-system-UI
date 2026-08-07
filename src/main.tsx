@@ -1,19 +1,11 @@
-import { createRoot } from 'react-dom/client';
-import useFetch from "./useFetch";
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import './index.css';
+import App from './App';
 
-const Home = () => {
-  const [data] = useFetch("https://jsonplaceholder.typicode.com/todos");
-
-  return (
-    <>
-      {data &&
-        data.map((item) => {
-          return <p key={item.id}>{item.title}</p>;
-        })}
-    </>
-  );
-};
-
-createRoot(document.getElementById('root')).render(
-  <Home />
+ReactDOM.createRoot(document.getElementById('root')!).render(
+    <React.StrictMode>
+        <App />
+    </React.StrictMode>
 );
+
