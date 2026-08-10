@@ -1,11 +1,8 @@
-import { Badge } from "./components/ui/Badge";
+import { RouterProvider } from "react-router-dom";
+import { router } from "@/routes/router";
 
 function App() {
-    return (
-        <div className="App">
-            <Badge variant="info">Một hai ba</Badge>
-        </div>
-    );
+    return <RouterProvider router={router} />;
 }
 
-export default App;
+export default App;

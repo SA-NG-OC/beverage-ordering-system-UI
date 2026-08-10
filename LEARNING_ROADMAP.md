@@ -718,12 +718,17 @@ useCallback  → Cache function reference: tránh re-render child component (GĐ
 Custom Hooks → Gom logic dùng lại: useAuth(), useDebounce(), useLocalStorage()
 ```
 
-### A2. React Router v6 Concepts
-- **BrowserRouter** → Bọc toàn bộ app
-- **Routes / Route** → Định nghĩa URL → Component mapping
+### A2. React Router v6.4+ Concepts (Data Router API)
+
+> ⚠️ **Lưu ý**: React Router v6.4+ khuyến khích dùng **`createBrowserRouter`** + **`RouterProvider`** thay vì `BrowserRouter`. Đây là cách tiếp cận mới (Data Router API), hỗ trợ `loader`, `action`, `errorElement` — giống controller pattern ở NestJS.
+
+- **createBrowserRouter** → Tạo router object bằng config array (thay vì JSX `<BrowserRouter>`)
+- **RouterProvider** → Component duy nhất render vào `main.tsx`, nhận router object
+- **Route object** → `{ path, element, children, loader, action, errorElement }` — định nghĩa URL → Component mapping
 - **Outlet** → Slot để render child route (dùng cho Layout)
 - **Navigate** → Redirect programmatically
-- **useNavigate, useParams, useSearchParams** → Hooks điều hướng
+- **useNavigate, useParams, useSearchParams** → Hooks điều hướng (vẫn hoạt động bình thường)
+- **useLoaderData** → Lấy dữ liệu từ `loader` function (sẽ học ở GĐ 3+)
 
 ### A3. Axios vs Fetch
 | | Fetch (built-in) | Axios |
@@ -1096,10 +1101,10 @@ export function ProtectedRoute({ allowedRoles }: ProtectedRouteProps) {
 }
 ```
 
-**File `src/routes/AppRouter.tsx`**:
+**File `src/routes/router.tsx`** (đổi tên từ `AppRouter.tsx` → `router.tsx` vì giờ export router object, không phải component):
 
 ```tsx
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { createBrowserRouter, Navigate } from 'react-router-dom';
 import { ProtectedRoute } from './ProtectedRoute';
 
 // Layouts
@@ -1116,64 +1121,95 @@ import { RegisterPage } from '@/features/auth/pages/RegisterPage';
 // import { HomePage } from '@/features/stores/pages/HomePage';
 // ...
 
-export function AppRouter() {
-  return (
-    <BrowserRouter>
-      <Routes>
-        {/* ── AUTH ROUTES (không cần đăng nhập) ── */}
-        <Route element={<AuthLayout />}>
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/register" element={<RegisterPage />} />
-        </Route>
+// 🎓 createBrowserRouter: Tạo router bằng config object array
+// Mỗi object = 1 route, có thể nest qua property `children`
+// Giống cách NestJS định nghĩa routes trong module — khai báo rõ ràng, dễ đọc
+export const router = createBrowserRouter([
+  // ── AUTH ROUTES (không cần đăng nhập) ──
+  {
+    element: <AuthLayout />,
+    children: [
+      { path: '/login', element: <LoginPage /> },
+      { path: '/register', element: <RegisterPage /> },
+    ],
+  },
 
-        {/* ── PUBLIC + CUSTOMER ROUTES ── */}
-        <Route element={<MainLayout />}>
-          <Route path="/" element={<div>Home Page — GĐ 3</div>} />
-          <Route path="/stores" element={<div>Store List — GĐ 3</div>} />
-          <Route path="/stores/:id" element={<div>Store Detail — GĐ 3</div>} />
-          <Route path="/products" element={<div>Products — GĐ 3</div>} />
+  // ── PUBLIC + CUSTOMER ROUTES ──
+  {
+    element: <MainLayout />,
+    children: [
+      { path: '/', element: <div>Home Page — GĐ 3</div> },
+      { path: '/stores', element: <div>Store List — GĐ 3</div> },
+      { path: '/stores/:id', element: <div>Store Detail — GĐ 3</div> },
+      { path: '/products', element: <div>Products — GĐ 3</div> },
 
-          {/* Customer Protected Routes */}
-          <Route element={<ProtectedRoute allowedRoles={['customer']} />}>
-            <Route path="/cart" element={<div>Cart — GĐ 3</div>} />
-            <Route path="/checkout" element={<div>Checkout — GĐ 3</div>} />
-            <Route path="/orders" element={<div>Order History — GĐ 3</div>} />
-            <Route path="/orders/:id" element={<div>Order Detail — GĐ 3</div>} />
-          </Route>
-        </Route>
+      // Customer Protected Routes
+      {
+        element: <ProtectedRoute allowedRoles={['customer']} />,
+        children: [
+          { path: '/cart', element: <div>Cart — GĐ 3</div> },
+          { path: '/checkout', element: <div>Checkout — GĐ 3</div> },
+          { path: '/orders', element: <div>Order History — GĐ 3</div> },
+          { path: '/orders/:id', element: <div>Order Detail — GĐ 3</div> },
+        ],
+      },
+    ],
+  },
 
-        {/* ── STAFF ROUTES (role = staff) ── */}
-        <Route element={<ProtectedRoute allowedRoles={['staff']} />}>
-          <Route element={<StaffLayout />}>
-            <Route path="/staff" element={<div>Staff Dashboard — GĐ 4</div>} />
-            <Route path="/staff/store" element={<div>Store Info — GĐ 4</div>} />
-            <Route path="/staff/categories" element={<div>Categories — GĐ 4</div>} />
-            <Route path="/staff/products" element={<div>Products — GĐ 4</div>} />
-            <Route path="/staff/orders" element={<div>Orders — GĐ 4</div>} />
-            <Route path="/staff/statistics" element={<div>Statistics — GĐ 4</div>} />
-          </Route>
-        </Route>
+  // ── STAFF ROUTES (role = staff) ──
+  {
+    element: <ProtectedRoute allowedRoles={['staff']} />,
+    children: [
+      {
+        element: <StaffLayout />,
+        children: [
+          { path: '/staff', element: <div>Staff Dashboard — GĐ 4</div> },
+          { path: '/staff/store', element: <div>Store Info — GĐ 4</div> },
+          { path: '/staff/categories', element: <div>Categories — GĐ 4</div> },
+          { path: '/staff/products', element: <div>Products — GĐ 4</div> },
+          { path: '/staff/orders', element: <div>Orders — GĐ 4</div> },
+          { path: '/staff/statistics', element: <div>Statistics — GĐ 4</div> },
+        ],
+      },
+    ],
+  },
 
-        {/* ── ADMIN ROUTES (role = admin) ── */}
-        <Route element={<ProtectedRoute allowedRoles={['admin']} />}>
-          <Route element={<AdminLayout />}>
-            <Route path="/admin" element={<div>Admin Dashboard — GĐ 5</div>} />
-            <Route path="/admin/stores" element={<div>Stores — GĐ 5</div>} />
-            <Route path="/admin/staff" element={<div>Staff Mgmt — GĐ 5</div>} />
-            <Route path="/admin/users" element={<div>Users — GĐ 5</div>} />
-            <Route path="/admin/orders" element={<div>All Orders — GĐ 5</div>} />
-          </Route>
-        </Route>
+  // ── ADMIN ROUTES (role = admin) ──
+  {
+    element: <ProtectedRoute allowedRoles={['admin']} />,
+    children: [
+      {
+        element: <AdminLayout />,
+        children: [
+          { path: '/admin', element: <div>Admin Dashboard — GĐ 5</div> },
+          { path: '/admin/stores', element: <div>Stores — GĐ 5</div> },
+          { path: '/admin/staff', element: <div>Staff Mgmt — GĐ 5</div> },
+          { path: '/admin/users', element: <div>Users — GĐ 5</div> },
+          { path: '/admin/orders', element: <div>All Orders — GĐ 5</div> },
+        ],
+      },
+    ],
+  },
 
-        {/* ── FALLBACK ── */}
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
-    </BrowserRouter>
-  );
-}
+  // ── FALLBACK ──
+  { path: '*', element: <Navigate to="/" replace /> },
+]);
 ```
 
-> 🎓 **Bài học Module 4**: Bạn vừa học **Nested Routes** (Layout → Pages), **Protected Routes** (guard theo role), và **Outlet pattern**. Giống middleware guard trong NestJS nhưng ở phía client.
+> 🎓 **Bài học Module 4**: Bạn vừa học **Data Router API** — cách hiện đại nhất để cấu hình React Router.
+> - `createBrowserRouter` nhận **config array** thay vì JSX → dễ đọc, dễ maintain, dễ thêm `loader`/`action` sau này
+> - **Nested Routes** qua `children` property (Layout → Pages)
+> - **Protected Routes** (guard theo role) và **Outlet pattern** vẫn hoạt động y hệt
+> - Giống cách NestJS `@Module({ controllers: [...] })` — khai báo route bằng config, không phải template
+
+> 💡 **So sánh nhanh `BrowserRouter` vs `createBrowserRouter`**:
+> | | BrowserRouter (cũ) | createBrowserRouter (mới) |
+> |--|--|--|
+> | Khai báo | JSX (`<Route>`) | Config object array |
+> | Data loading | Tự xử lý trong component | `loader` function (tách biệt) |
+> | Error handling | Tự try/catch | `errorElement` trên mỗi route |
+> | Form mutation | Tự xử lý | `action` function (như controller method) |
+> | Tương lai | Không được phát triển thêm | Hướng phát triển chính của React Router |
 
 ---
 
@@ -1321,11 +1357,12 @@ npm install -D @tanstack/react-query-devtools
 ```tsx
 import React from 'react';
 import ReactDOM from 'react-dom/client';
+import { RouterProvider } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { Provider as ReduxProvider } from 'react-redux';
 import { store } from '@/store/store';
-import { AppRouter } from '@/routes/AppRouter';
+import { router } from '@/routes/router';  // 🎓 Import router object (không phải component)
 import './index.css';
 
 const queryClient = new QueryClient({
@@ -1342,7 +1379,8 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <ReduxProvider store={store}>
       <QueryClientProvider client={queryClient}>
-        <AppRouter />
+        {/* 🎓 RouterProvider: Thay thế <AppRouter /> — nhận router object từ createBrowserRouter */}
+        <RouterProvider router={router} />
         <ReactQueryDevtools initialIsOpen={false} />
       </QueryClientProvider>
     </ReduxProvider>
@@ -2031,10 +2069,11 @@ Code Splitting  → Chia bundle thành nhiều chunk nhỏ, tải theo route
 
 ### B1. Code Splitting với React.lazy (Module 11)
 
-**Cập nhật `src/routes/AppRouter.tsx`**:
+**Cập nhật `src/routes/router.tsx`** — Thêm lazy loading:
 
 ```tsx
 import { lazy, Suspense } from 'react';
+import { createBrowserRouter, Navigate } from 'react-router-dom';
 import { Spin } from 'antd';
 
 // 🎓 React.lazy: Component chỉ được import khi user truy cập route tương ứng
@@ -2051,12 +2090,18 @@ function PageLoading() {
   );
 }
 
-// Trong Routes:
-// <Route path="/staff" element={
-//   <Suspense fallback={<PageLoading />}>
-//     <StaffDashboard />
-//   </Suspense>
-// } />
+// 🎓 Helper bọc Suspense cho lazy component
+function lazyPage(Component: React.LazyExoticComponent<React.ComponentType>) {
+  return (
+    <Suspense fallback={<PageLoading />}>
+      <Component />
+    </Suspense>
+  );
+}
+
+// Trong createBrowserRouter config:
+// { path: '/staff', element: lazyPage(StaffDashboard) },
+// { path: '/admin', element: lazyPage(AdminDashboard) },
 ```
 
 ### B2. React.memo cho List Items (Module 11)

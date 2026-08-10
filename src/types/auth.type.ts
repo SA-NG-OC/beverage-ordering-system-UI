@@ -1,8 +1,9 @@
+import type { Role } from "./enum/role.enum";
+
 export interface RegisterDto {
     email: string;
     password: string;
-    fullname: string;
-    phone?: string;
+    fullName: string;
 }
 
 export interface LoginDto {
@@ -13,9 +14,9 @@ export interface LoginDto {
 export interface UserResponseDto {
     id: string;
     email: string;
-    fullname: string;
+    fullName: string;
     phone: string | null;
-    role: 'customer' | 'staff' | 'admin';
+    role: Role;
     isBanned: boolean;
     createdAt: string;
     updatedAt: string;
