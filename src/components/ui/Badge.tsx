@@ -38,9 +38,9 @@ export function getOrderStatusBadge(status: OrderStatus) {
 
 export function getProductStatusBadge(status: ProductStatus) {
     const config: Record<ProductStatus, { label: string; variant: BadgeVariant }> = {
-        active: { label: 'Đang bán', variant: 'success' },
-        hidden: { label: 'Ẩn', variant: 'neutral' },
-        out_of_stock: { label: 'Hết hàng', variant: 'danger' },
+        active: { label: 'Active', variant: 'success' },
+        hidden: { label: 'Hidden', variant: 'neutral' },
+        out_of_stock: { label: 'Out of Stock', variant: 'danger' },
     };
     const { label, variant } = config[status];
     return <Badge variant={variant}>{label}</Badge>;

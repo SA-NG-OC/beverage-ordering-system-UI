@@ -31,13 +31,13 @@ export function LoginPage() {
 
             // Điều hướng theo role
             if (user.role === Role.ADMIN) {
-                navigate('/admin');
+                navigate('/admin/products');
             }
             else if (user.role === Role.STAFF) {
-                navigate('/staff');
+                navigate('/staff/products');
             }
             else {
-                navigate('/');
+                navigate('/products');
             }
         }
         catch (error: any) {
