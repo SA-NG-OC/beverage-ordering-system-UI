@@ -11,6 +11,7 @@ import { ProductDetailPage } from "@/feature/product/pages/ProductDetailPage";
 import { EditProductPage } from "@/feature/product/pages/EditProductPage";
 import { Role } from "@/types/enum/role.enum";
 import { NotFoundPage } from "@/feature/NotFoundPage";
+import AdminUsersPage from "@/feature/admin/pages/AdminUsersPage";
 
 export const router = createBrowserRouter([
   // 1. Auth Routes (Public)
@@ -74,11 +75,7 @@ export const router = createBrowserRouter([
           { path: "/admin/dashboard", element: <h1>Admin Board View</h1> },
           {
             path: "/admin/users",
-            element: (
-              <div className="p-4 bg-white rounded-xl shadow-sm border border-gray-100">
-                <h1 className="text-xl font-bold">Users Management View</h1>
-              </div>
-            ),
+            element: <AdminUsersPage />
           },
         ],
       },

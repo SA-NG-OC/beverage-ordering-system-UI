@@ -1,3 +1,4 @@
+import type { Role } from "./enum/role.enum";
 import type { StoreResponseDto } from "./store.type";
 
 export interface StaffResponseDto {
@@ -25,9 +26,21 @@ export interface UserManagementResponseDto {
   id: string;
   email: string;
   fullName: string;
-  phone: string | null;
-  role: "customer" | "staff" | "admin";
+  role: Role | string;
+  storeId?: string | null;
+  avatarUrl?: string | null;
+  dob?: string | null;
+  gender?: string | null;
   isBanned: boolean;
   createdAt: string;
   updatedAt: string;
+}
+export interface UserQueryParams {
+  page?: number;
+  limit?: number;
+  search?: string;
+  sortBy?: string;
+  sortOrder?: "ASC" | "DESC";
+  role?: string;
+  isBanned?: boolean;
 }
