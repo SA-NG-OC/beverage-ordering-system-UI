@@ -3,19 +3,21 @@ import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/Button";
 
 export function MainLayout() {
-  const { user, isAuthenticated, logout, isAdmin, isStaff } = useAuth();
+  const { user, isAuthenticated, logout, isAdmin, isStaff, isCustomer } = useAuth();
   const location = useLocation();
 
-  const isActive = (path: string) => location.pathname === path;
+  const isActive = (path: string) => {
+    if (path === "/") return location.pathname === "/";
+    return location.pathname.startsWith(path);
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col justify-between font-sans">
-      {/* HEADER FIX AT HERE */}
+      {/* Header Bar */}
       <header className="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-gray-200 shadow-xs">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
-
-          {/* Left: Brand Logo & Navigation */}
-          <div className="flex items-center gap-8">
+          {/* Left: Logo & Navigation */}
+          <div className="flex items-center gap-6">
             <Link to="/" className="flex items-center gap-3 group">
               <div className="w-10 h-10 rounded-xl bg-blue-500 flex items-center justify-center text-white text-lg font-bold shadow-md shadow-blue-500/20 group-hover:scale-105 transition-transform">
                 ☕
@@ -30,54 +32,102 @@ export function MainLayout() {
               </div>
             </Link>
 
-            {/* Nav Links */}
+            {/* Navigation Links */}
             <nav className="hidden md:flex items-center gap-1">
               <Link
-                to="/"
-                className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${isActive("/")
+                to="/products"
+                className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  isActive("/products") || isActive("/")
                     ? "bg-blue-50 text-blue-600"
                     : "text-gray-600 hover:text-gray-900 hover:bg-gray-100"
-                  }`}
+                }`}
               >
-                Stores & Menu
+                Menu
               </Link>
 
-              {isAuthenticated && (
-                <Link
-                  to="/orders/history"
-                  className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${isActive("/orders/history")
-                      ? "bg-blue-50 text-blue-600"
-                      : "text-gray-600 hover:text-gray-900 hover:bg-gray-100"
+              {/* Customer Routes */}
+              {isAuthenticated && (isCustomer || (!isAdmin && !isStaff)) && (
+                <>
+                  <Link
+                    to="/orders"
+                    className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                      isActive("/orders")
+                        ? "bg-blue-50 text-blue-600"
+                        : "text-gray-600 hover:text-gray-900 hover:bg-gray-100"
                     }`}
-                >
-                  My Orders
-                </Link>
+                  >
+                    My Orders
+                  </Link>
+                  <Link
+                    to="/profile"
+                    className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                      isActive("/profile")
+                        ? "bg-blue-50 text-blue-600"
+                        : "text-gray-600 hover:text-gray-900 hover:bg-gray-100"
+                    }`}
+                  >
+                    Profile
+                  </Link>
+                </>
               )}
 
-              {isAdmin && (
-                <Link
-                  to="/admin"
-                  className="px-3 py-2 rounded-lg text-sm font-medium text-purple-600 hover:bg-purple-50 transition-colors"
-                >
-                  Admin Portal ⚙️
-                </Link>
-              )}
-
+              {/* Staff Routes */}
               {isStaff && (
                 <Link
-                  to="/staff"
-                  className="px-3 py-2 rounded-lg text-sm font-medium text-amber-600 hover:bg-amber-50 transition-colors"
+                  to="/staff/products"
+                  className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                    isActive("/staff/products")
+                      ? "bg-amber-100 text-amber-800"
+                      : "text-amber-700 hover:bg-amber-50"
+                  }`}
                 >
-                  Staff Portal 🏪
+                  Staff Menu 🏪
                 </Link>
+              )}
+
+              {/* Admin Routes */}
+              {isAdmin && (
+                <div className="flex items-center gap-1">
+                  <Link
+                    to="/admin/products"
+                    className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                      isActive("/admin/products")
+                        ? "bg-purple-100 text-purple-800"
+                        : "text-purple-700 hover:bg-purple-50"
+                    }`}
+                  >
+                    Admin Products ⚙️
+                  </Link>
+                  <Link
+                    to="/admin/dashboard"
+                    className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                      isActive("/admin/dashboard")
+                        ? "bg-purple-100 text-purple-800"
+                        : "text-purple-700 hover:bg-purple-50"
+                    }`}
+                  >
+                    Dashboard 📊
+                  </Link>
+                  <Link
+                    to="/admin/users"
+                    className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                      isActive("/admin/users")
+                        ? "bg-purple-100 text-purple-800"
+                        : "text-purple-700 hover:bg-purple-50"
+                    }`}
+                  >
+                    Users 👥
+                  </Link>
+                </div>
               )}
             </nav>
           </div>
 
-          {/* Right: Cart & User Account Section */}
+          {/* Right: Cart & User Profile Section */}
           <div className="flex items-center gap-3">
+            {/* Cart Button */}
             <Link
-              to="/checkout"
+              to="/orders"
               className="relative p-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-colors"
               title="Cart"
             >
@@ -102,16 +152,16 @@ export function MainLayout() {
 
             <div className="h-6 w-px bg-gray-200 hidden sm:block" />
 
+            {/* Auth Buttons / Profile info */}
             {isAuthenticated && user ? (
               <div className="flex items-center gap-3">
                 <div className="hidden sm:flex flex-col text-right">
                   <span className="text-sm font-semibold text-gray-900 leading-tight">
                     {user.fullName}
                   </span>
-                  <span className="text-[11px] text-gray-500 capitalize">
-                    {user.role}
-                  </span>
+                  <span className="text-[11px] text-gray-500 capitalize">{user.role}</span>
                 </div>
+
                 <div className="w-9 h-9 rounded-full bg-blue-100 text-blue-700 font-bold flex items-center justify-center text-sm border border-blue-200">
                   {user.fullName ? user.fullName.charAt(0).toUpperCase() : "U"}
                 </div>
@@ -140,7 +190,6 @@ export function MainLayout() {
               </div>
             )}
           </div>
-
         </div>
       </header>
 
@@ -161,3 +210,5 @@ export function MainLayout() {
     </div>
   );
 }
+
+export default MainLayout;

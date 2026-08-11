@@ -7,6 +7,9 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "format:check": "npx prettier --check \"src/**/*.{ts,tsx,css,json,md}\"",
+    "format": "npx prettier --write \"src/**/*.{ts,tsx,css,json,md}\"",
     "preview": "vite preview"
   },
   "dependencies": {
@@ -30,6 +33,7 @@
     "eslint-plugin-react-hooks": "^7.1.1",
     "eslint-plugin-react-refresh": "^0.5.3",
     "globals": "^17.7.0",
+    "prettier": "^3.5.0",
     "typescript": "~6.0.2",
     "typescript-eslint": "^8.65.0",
     "vite": "^8.2.0"

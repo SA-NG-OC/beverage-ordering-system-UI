@@ -13,82 +13,81 @@ import { Role } from "@/types/enum/role.enum";
 import { NotFoundPage } from "@/feature/NotFoundPage";
 
 export const router = createBrowserRouter([
-    // 1. Auth Routes (Public)
-    {
-        element: <AuthLayout />,
-        children: [
-            { path: "/login", element: <LoginPage /> },
-            { path: "/register", element: <RegisterPage /> },
-        ],
-    },
+  // 1. Auth Routes (Public)
+  {
+    element: <AuthLayout />,
+    children: [
+      { path: "/login", element: <LoginPage /> },
+      { path: "/register", element: <RegisterPage /> },
+    ],
+  },
 
-    // 2. Main Public & Customer Product Routes (Accessible by All)
-    {
+  // 2. Main Public & Customer Product Routes (Accessible by All)
+  {
+    element: <MainLayout />,
+    children: [
+      { path: "/", element: <CustomerProductsPage /> },
+      { path: "/products", element: <CustomerProductsPage /> },
+      { path: "/products/:id", element: <ProductDetailPage /> },
+    ],
+  },
+
+  // 3. Protected Customer Routes
+  {
+    element: <ProtectedRoute allowedRoles={[Role.CUSTOMER]} />,
+    children: [
+      {
         element: <MainLayout />,
         children: [
-            { path: "/", element: <CustomerProductsPage /> },
-            { path: "/products", element: <CustomerProductsPage /> },
-            { path: "/products/:id", element: <ProductDetailPage /> },
+          { path: "/profile", element: <h1>Profile View</h1> },
+          { path: "/orders", element: <h1>Orders View</h1> },
         ],
-    },
+      },
+    ],
+  },
 
-    // 3. Protected Customer Routes
-    {
-        element: <ProtectedRoute allowedRoles={[Role.CUSTOMER]} />,
+  // 4. Protected Staff Routes
+  {
+    element: <ProtectedRoute allowedRoles={[Role.STAFF, Role.ADMIN]} />,
+    children: [
+      {
+        element: <MainLayout />,
         children: [
-            {
-                element: <MainLayout />,
-                children: [
-                    { path: "/profile", element: <h1>Profile View</h1> },
-                    { path: "/orders", element: <h1>Orders View</h1> },
-                ],
-            },
+          { path: "/staff/products", element: <StaffProductsPage /> },
+          { path: "/staff/products/:id", element: <ProductDetailPage /> },
+          { path: "/staff/products/:id/edit", element: <EditProductPage /> },
         ],
-    },
+      },
+    ],
+  },
 
-    // 4. Protected Staff Routes
-    {
-        element: <ProtectedRoute allowedRoles={[Role.STAFF, Role.ADMIN]} />,
+  // 5. Protected Admin Routes
+  {
+    element: <ProtectedRoute allowedRoles={[Role.ADMIN]} />,
+    children: [
+      {
+        element: <MainLayout />,
         children: [
-            {
-                element: <MainLayout />,
-                children: [
-                    { path: "/staff/products", element: <StaffProductsPage /> },
-                    { path: "/staff/products/:id", element: <ProductDetailPage /> },
-                    { path: "/staff/products/:id/edit", element: <EditProductPage /> },
-                ],
-            },
+          { path: "/admin/products", element: <AdminProductsPage /> },
+          { path: "/admin/products/:id", element: <ProductDetailPage /> },
+          { path: "/admin/products/:id/edit", element: <EditProductPage /> },
+          { path: "/admin/dashboard", element: <h1>Admin Board View</h1> },
+          {
+            path: "/admin/users",
+            element: (
+              <div className="p-4 bg-white rounded-xl shadow-sm border border-gray-100">
+                <h1 className="text-xl font-bold">Users Management View</h1>
+              </div>
+            ),
+          },
         ],
-    },
+      },
+    ],
+  },
 
-    // 5. Protected Admin Routes
-    {
-        element: <ProtectedRoute allowedRoles={[Role.ADMIN]} />,
-        children: [
-            {
-                element: <MainLayout />,
-                children: [
-                    { path: "/admin/products", element: <AdminProductsPage /> },
-                    { path: "/admin/products/:id", element: <ProductDetailPage /> },
-                    { path: "/admin/products/:id/edit", element: <EditProductPage /> },
-                    { path: "/admin/dashboard", element: <h1>Admin Board View</h1> },
-                    { path: "/admin/users", element: <UsersManagerView /> },
-                ],
-            },
-        ],
-    },
-
-    // 6. 404 Fallback
-    {
-        path: "*",
-        element: <NotFoundPage />,
-    },
+  // 6. 404 Fallback
+  {
+    path: "*",
+    element: <NotFoundPage />,
+  },
 ]);
-
-function UsersManagerView() {
-    return (
-        <div className="p-4 bg-white rounded-xl shadow-sm border border-gray-100">
-            <h1 className="text-xl font-bold">Users Management View</h1>
-        </div>
-    );
-}

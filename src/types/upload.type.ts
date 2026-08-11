@@ -1,3 +1,3 @@
 export interface UploadImageResponseDto {
-    imageUrl: string;
+  imageUrl: string;
 }
