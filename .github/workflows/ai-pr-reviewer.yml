@@ -53,20 +53,22 @@ jobs:
               baseURL: "https://integrate.api.nvidia.com/v1",
             });
 
-            const prompt = `You are a senior software engineer performing a thorough Pull Request (PR) code review. Respond entirely in English, regardless of the language used in the code, comments, or commit messages.
-
-Your tasks:
-1. **Summary**: Provide a concise summary of the key changes introduced in this PR.
-2. **Issues & Bugs**: Identify potential bugs, security vulnerabilities, edge cases, or performance bottlenecks. If none are found, state that explicitly.
-3. **Improvements & Best Practices**: Suggest actionable recommendations on clean code, design patterns, naming conventions, and refactoring opportunities to improve maintainability.
-4. **Suggested PR Description**: Generate a structured PR description template with the following sections (omit or mark as N/A if the context is missing from the diff):
-   - **Problem**: What issue does this PR solve?
-   - **Solution**: How is it implemented?
-   - **Testing**: How should this be verified?
-   - **Related Issues**: Any referenced tickets or issues.
-
-Git diff content:
-\n\n${diff.substring(0, 30000)}`;
+            const prompt = [
+              "You are a senior software engineer performing a thorough Pull Request (PR) code review. Respond entirely in English, regardless of the language used in the code, comments, or commit messages.",
+              "",
+              "Your tasks:",
+              "1. **Summary**: Provide a concise summary of the key changes introduced in this PR.",
+              "2. **Issues & Bugs**: Identify potential bugs, security vulnerabilities, edge cases, or performance bottlenecks. If none are found, state that explicitly.",
+              "3. **Improvements & Best Practices**: Suggest actionable recommendations on clean code, design patterns, naming conventions, and refactoring opportunities to improve maintainability.",
+              "4. **Suggested PR Description**: Generate a structured PR description template with the following sections (omit or mark as N/A if the context is missing from the diff):",
+              "   * **Problem**: What issue does this PR solve?",
+              "   * **Solution**: How is it implemented?",
+              "   * **Testing**: How should this be verified?",
+              "   * **Related Issues**: Any referenced tickets or issues.",
+              "",
+              "Git diff content:",
+              diff.substring(0, 30000)
+            ].join("\n");
 
             console.log("Sending review request to NVIDIA API...");
 
@@ -96,7 +98,6 @@ Git diff content:
               }
             }
 
-            // Construct comment body
             let commentBody = "🤖 **AI PR Reviewer Report (NVIDIA Nemotron)**\n\n";
 
             if (fullReasoning.trim()) {
