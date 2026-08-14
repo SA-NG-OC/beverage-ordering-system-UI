@@ -23,4 +23,3 @@ export interface UpdateStoreDto {
   address?: string;
   isOpen?: boolean;
 }
-

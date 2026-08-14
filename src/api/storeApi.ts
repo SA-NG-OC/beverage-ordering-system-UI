@@ -15,7 +15,9 @@ export const storeApi = {
 
   // Admin APIs
   getAdminStores: (params?: StoreQueryParams) => {
-    return axiosClient.get<ApiResponse<PaginatedData<StoreResponseDto>>>("/stores/admin", { params });
+    return axiosClient.get<ApiResponse<PaginatedData<StoreResponseDto>>>("/stores/admin", {
+      params,
+    });
   },
 
   createStore: (data: CreateStoreDto) => {

@@ -45,7 +45,6 @@ export function MainLayout() {
                 Stores 🏪
               </Link>
 
-
               {/* Customer Routes */}
               {isAuthenticated && (isCustomer || (!isAdmin && !isStaff)) && (
                 <>

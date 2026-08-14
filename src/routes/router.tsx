@@ -40,7 +40,6 @@ export const router = createBrowserRouter([
     ],
   },
 
-
   // 3. Protected Customer Routes
   {
     element: <ProtectedRoute allowedRoles={[Role.CUSTOMER]} />,
