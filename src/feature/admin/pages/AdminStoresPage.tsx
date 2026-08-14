@@ -155,9 +155,7 @@ export function AdminStoresPage() {
       {/* 1. Header Section */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-extrabold text-gray-900 tracking-tight">
-            Store Management
-          </h1>
+          <h1 className="text-2xl font-extrabold text-gray-900 tracking-tight">Store Management</h1>
           <p className="text-sm text-gray-500">
             View, create, update, and manage lock status for all system stores.
           </p>
