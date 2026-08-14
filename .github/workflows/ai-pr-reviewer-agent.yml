@@ -1,0 +1,44 @@
+name: AI PR Reviewer Agent (NVIDIA Nemotron)
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+jobs:
+  review:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Get PR Diff
+        id: get_diff
+        run: |
+          git fetch origin ${{ github.base_ref }}
+          git diff origin/${{ github.base_ref }}...HEAD > pr_diff.patch
+          echo "diff_exists=$(test -s pr_diff.patch && echo true || echo false)" >> $GITHUB_OUTPUT
+
+      - name: Setup Node.js
+        if: steps.get_diff.outputs.diff_exists == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        if: steps.get_diff.outputs.diff_exists == 'true'
+        run: npm install openai @octokit/rest
+
+      - name: Run Review Agent
+        if: steps.get_diff.outputs.diff_exists == 'true'
+        env:
+          NVIDIA_API_KEY: ${{ secrets.NVIDIA_API_KEY }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          REPO: ${{ github.repository }}
+        run: node .github/scripts/review-agent.js
