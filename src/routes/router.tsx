@@ -12,7 +12,8 @@ import { EditProductPage } from "@/feature/product/pages/EditProductPage";
 import { CreateProductPage } from "@/feature/product/pages/CreateProductPage";
 import { Role } from "@/types/enum/role.enum";
 import { NotFoundPage } from "@/feature/NotFoundPage";
-import AdminUsersPage from "@/feature/admin/pages/AdminUsersPage";
+import { StoreListPage } from "@/feature/store/pages/StoreListPage";
+import { StoreDetailPage } from "@/feature/store/pages/StoreDetailPage";
 
 export const router = createBrowserRouter([
   // 1. Auth Routes (Public)
@@ -24,15 +25,18 @@ export const router = createBrowserRouter([
     ],
   },
 
-  // 2. Main Public & Customer Product Routes (Accessible by All)
+  // 2. Main Public & Store Routes (Accessible by All)
   {
     element: <MainLayout />,
     children: [
-      { path: "/", element: <CustomerProductsPage /> },
+      { path: "/", element: <StoreListPage /> },
+      { path: "/stores", element: <StoreListPage /> },
+      { path: "/stores/:id", element: <StoreDetailPage /> },
       { path: "/products", element: <CustomerProductsPage /> },
       { path: "/products/:id", element: <ProductDetailPage /> },
     ],
   },
+
 
   // 3. Protected Customer Routes
   {

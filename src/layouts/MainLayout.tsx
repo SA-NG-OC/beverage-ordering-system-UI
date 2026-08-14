@@ -35,15 +35,16 @@ export function MainLayout() {
             {/* Navigation Links */}
             <nav className="hidden md:flex items-center gap-1">
               <Link
-                to="/products"
+                to="/stores"
                 className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                  isActive("/products") || isActive("/")
+                  isActive("/stores") || isActive("/")
                     ? "bg-blue-50 text-blue-600"
                     : "text-gray-600 hover:text-gray-900 hover:bg-gray-100"
                 }`}
               >
-                Menu
+                Stores 🏪
               </Link>
+
 
               {/* Customer Routes */}
               {isAuthenticated && (isCustomer || (!isAdmin && !isStaff)) && (
