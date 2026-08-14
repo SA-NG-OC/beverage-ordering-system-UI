@@ -4,7 +4,6 @@ import { useStores } from "@/hooks/useStores";
 import { storeApi } from "@/api/storeApi";
 import type { StoreResponseDto, CreateStoreDto, UpdateStoreDto } from "@/types/store.type";
 import { Button } from "@/components/ui/Button";
-import { Badge } from "@/components/ui/Badge";
 
 export function AdminStoresPage() {
   const {
@@ -156,18 +155,30 @@ export function AdminStoresPage() {
       {/* 1. Header Section */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Admin Store Management 🏬</h1>
+          <h1 className="text-2xl font-extrabold text-gray-900 tracking-tight">
+            Store Management
+          </h1>
           <p className="text-sm text-gray-500">
             View, create, update, and manage lock status for all system stores.
           </p>
         </div>
-        <Button variant="primary" size="md" onClick={handleOpenCreateModal}>
-          + Create New Store
+        <Button variant="primary" size="md" onClick={handleOpenCreateModal} className="gap-2">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="w-4 h-4"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth={2.5}
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
+          </svg>
+          <span>Create New Store</span>
         </Button>
       </div>
 
       {/* 2. Toolbar & Filters */}
-      <div className="bg-white p-4 rounded-2xl border border-gray-100 shadow-xs flex flex-col md:flex-row items-center gap-4">
+      <div className="bg-white p-4 rounded-2xl border border-gray-200/80 shadow-xs flex flex-col md:flex-row items-center gap-4">
         <div className="relative flex-1 w-full">
           <input
             type="text"
@@ -215,7 +226,7 @@ export function AdminStoresPage() {
       )}
 
       {/* 3. Stores Table */}
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-xs overflow-hidden">
+      <div className="bg-white rounded-2xl border border-gray-200/80 shadow-xs overflow-hidden">
         {isLoading ? (
           <div className="p-8 text-center text-gray-500 animate-pulse">Loading stores list...</div>
         ) : stores.length === 0 ? (
@@ -224,7 +235,7 @@ export function AdminStoresPage() {
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="bg-gray-50/50 border-b border-gray-100 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                <tr className="bg-gray-50/70 border-b border-gray-200/80 text-xs font-semibold text-gray-500 uppercase tracking-wider">
                   <th className="px-6 py-4">Store Name</th>
                   <th className="px-6 py-4">Phone</th>
                   <th className="px-6 py-4">Address</th>
@@ -236,23 +247,77 @@ export function AdminStoresPage() {
               <tbody className="divide-y divide-gray-100 text-sm text-gray-700">
                 {stores.map((s) => (
                   <tr key={s.id} className="hover:bg-gray-50/60 transition-colors">
-                    <td className="px-6 py-4 font-semibold text-gray-900 flex items-center gap-2">
-                      <span>🏪</span> {s.name}
+                    <td className="px-6 py-4 font-semibold text-gray-900 flex items-center gap-2.5">
+                      <div className="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center shrink-0 border border-blue-100">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          className="w-4 h-4"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                          strokeWidth={2}
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
+                          />
+                        </svg>
+                      </div>
+                      <span>{s.name}</span>
                     </td>
                     <td className="px-6 py-4">{s.phone}</td>
-                    <td className="px-6 py-4 max-w-xs truncate">{s.address}</td>
+                    <td className="px-6 py-4 max-w-xs truncate text-gray-600">{s.address}</td>
                     <td className="px-6 py-4">
                       {s.isOpen ? (
-                        <Badge variant="success">Open</Badge>
+                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                          Open
+                        </span>
                       ) : (
-                        <Badge variant="danger">Closed</Badge>
+                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200">
+                          <span className="w-1.5 h-1.5 rounded-full bg-rose-500" />
+                          Closed
+                        </span>
                       )}
                     </td>
                     <td className="px-6 py-4">
                       {s.isLocked ? (
-                        <Badge variant="danger">🔒 Locked</Badge>
+                        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200">
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            className="w-3.5 h-3.5"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                            strokeWidth={2}
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+                            />
+                          </svg>
+                          <span>Locked</span>
+                        </span>
                       ) : (
-                        <Badge variant="neutral">🔓 Normal</Badge>
+                        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-semibold bg-gray-50 text-gray-700 border border-gray-200">
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            className="w-3.5 h-3.5 text-gray-400"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                            strokeWidth={2}
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              d="M8 11V7a4 4 0 118 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z"
+                            />
+                          </svg>
+                          <span>Active</span>
+                        </span>
                       )}
                     </td>
                     <td className="px-6 py-4 text-right">

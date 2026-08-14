@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { storeApi } from "@/api/storeApi";
 import type { StoreResponseDto, UpdateStoreDto } from "@/types/store.type";
 import { Button } from "@/components/ui/Button";
-import { Badge } from "@/components/ui/Badge";
 import axios from "axios";
 
 export function StaffStorePage() {
@@ -133,8 +132,23 @@ export function StaffStorePage() {
 
   if (error || !store) {
     return (
-      <div className="max-w-md mx-auto p-8 bg-white rounded-3xl border border-gray-100 shadow-xs text-center space-y-4">
-        <span className="text-5xl">🏬</span>
+      <div className="max-w-md mx-auto p-8 bg-white rounded-3xl border border-gray-200/80 shadow-xs text-center space-y-4">
+        <div className="w-16 h-16 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center mx-auto border border-amber-100">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="w-8 h-8"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth={2}
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+            />
+          </svg>
+        </div>
         <h2 className="text-xl font-bold text-gray-900">Assigned Store Error</h2>
         <p className="text-sm text-gray-500">{error || "No assigned store found."}</p>
         <Button
@@ -156,7 +170,7 @@ export function StaffStorePage() {
       {/* Title */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Staff Assigned Store 🏪</h1>
+          <h1 className="text-2xl font-extrabold text-gray-900 tracking-tight">Assigned Store</h1>
           <p className="text-sm text-gray-500">
             Manage your store information and toggle open/closed status.
           </p>
@@ -175,27 +189,74 @@ export function StaffStorePage() {
       )}
 
       {/* Main Details Card / Form */}
-      <div className="bg-white rounded-3xl border border-gray-100 shadow-xs p-6 sm:p-8 space-y-6">
+      <div className="bg-white rounded-3xl border border-gray-200/80 shadow-xs p-6 sm:p-8 space-y-6">
         {/* Status Header */}
-        <div className="flex items-center justify-between border-b border-gray-100 pb-4">
-          <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-2xl bg-amber-50 text-amber-700 font-bold text-2xl flex items-center justify-center">
-              🏪
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-gray-100 pb-5 gap-4">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-amber-500 to-orange-500 text-white font-bold text-xl flex items-center justify-center shadow-md shadow-amber-500/20 shrink-0">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="w-6 h-6"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={2}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
+                />
+              </svg>
             </div>
             <div>
               <h2 className="text-xl font-bold text-gray-900">{store.name}</h2>
-              <div className="flex items-center gap-2 text-xs text-amber-600 font-semibold mt-0.5">
-                <span>⭐ {store.rating ? store.rating.toFixed(1) : "5.0"} Rating</span>
+              <div className="flex items-center gap-1.5 text-xs text-amber-800 font-semibold mt-1">
+                <div className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md bg-amber-50 border border-amber-200/60">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="w-3.5 h-3.5 text-amber-500 fill-amber-500"
+                    viewBox="0 0 24 24"
+                  >
+                    <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
+                  </svg>
+                  <span>{store.rating ? store.rating.toFixed(1) : "5.0"} Rating</span>
+                </div>
               </div>
             </div>
           </div>
-          <div className="flex items-center gap-2">
+
+          <div className="flex flex-wrap items-center gap-2">
             {store.isOpen ? (
-              <Badge variant="success">Open for Orders</Badge>
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                Open for Orders
+              </span>
             ) : (
-              <Badge variant="danger">Closed</Badge>
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200">
+                <span className="w-2 h-2 rounded-full bg-rose-500" />
+                Closed
+              </span>
             )}
-            {store.isLocked && <Badge variant="danger">🔒 Locked by Admin</Badge>}
+            {store.isLocked && (
+              <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="w-3.5 h-3.5"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={2}
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+                  />
+                </svg>
+                <span>Locked by Admin</span>
+              </span>
+            )}
           </div>
         </div>
 
