@@ -1,4 +1,5 @@
 import { useState } from "react";
+import axios from "axios";
 import { useStores } from "@/hooks/useStores";
 import { storeApi } from "@/api/storeApi";
 import type { StoreResponseDto, CreateStoreDto, UpdateStoreDto } from "@/types/store.type";
@@ -87,8 +88,12 @@ export function AdminStoresPage() {
       setIsCreateModalOpen(false);
       resetForm();
       refresh();
-    } catch (err: any) {
-      setFormError(err.response?.data?.message || "Failed to create store.");
+    } catch (err: unknown) {
+      setFormError(
+        axios.isAxiosError(err)
+          ? err.response?.data?.message || "Failed to create store."
+          : "Failed to create store."
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -115,8 +120,12 @@ export function AdminStoresPage() {
       setEditingStore(null);
       resetForm();
       refresh();
-    } catch (err: any) {
-      setFormError(err.response?.data?.message || "Failed to update store.");
+    } catch (err: unknown) {
+      setFormError(
+        axios.isAxiosError(err)
+          ? err.response?.data?.message || "Failed to update store."
+          : "Failed to update store."
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -131,8 +140,12 @@ export function AdminStoresPage() {
         await storeApi.lockStore(store.id);
       }
       refresh();
-    } catch (err: any) {
-      alert(err.response?.data?.message || "Failed to change lock status.");
+    } catch (err: unknown) {
+      alert(
+        axios.isAxiosError(err)
+          ? err.response?.data?.message || "Failed to change lock status."
+          : "Failed to change lock status."
+      );
     } finally {
       setActionLoadingId(null);
     }
@@ -204,9 +217,7 @@ export function AdminStoresPage() {
       {/* 3. Stores Table */}
       <div className="bg-white rounded-2xl border border-gray-100 shadow-xs overflow-hidden">
         {isLoading ? (
-          <div className="p-8 text-center text-gray-500 animate-pulse">
-            Loading stores list...
-          </div>
+          <div className="p-8 text-center text-gray-500 animate-pulse">Loading stores list...</div>
         ) : stores.length === 0 ? (
           <div className="p-12 text-center text-gray-500">No stores found.</div>
         ) : (
@@ -259,13 +270,15 @@ export function AdminStoresPage() {
                           size="sm"
                           disabled={actionLoadingId === s.id}
                           onClick={() => handleToggleLock(s)}
-                          className={s.isLocked ? "bg-emerald-600 hover:bg-emerald-700 text-white" : ""}
+                          className={
+                            s.isLocked ? "bg-emerald-600 hover:bg-emerald-700 text-white" : ""
+                          }
                         >
                           {actionLoadingId === s.id
                             ? "Processing..."
                             : s.isLocked
-                            ? "Unlock"
-                            : "Lock"}
+                              ? "Unlock"
+                              : "Lock"}
                         </Button>
                       </div>
                     </td>
@@ -361,9 +374,7 @@ export function AdminStoresPage() {
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-gray-700 mb-1">
-                  Address *
-                </label>
+                <label className="block text-xs font-semibold text-gray-700 mb-1">Address *</label>
                 <textarea
                   value={formData.address}
                   onChange={(e) => setFormData({ ...formData, address: e.target.value })}
@@ -400,11 +411,7 @@ export function AdminStoresPage() {
                   Cancel
                 </Button>
                 <Button type="submit" variant="primary" size="sm" disabled={isSubmitting}>
-                  {isSubmitting
-                    ? "Saving..."
-                    : editingStore
-                    ? "Save Changes"
-                    : "Create Store"}
+                  {isSubmitting ? "Saving..." : editingStore ? "Save Changes" : "Create Store"}
                 </Button>
               </div>
             </form>

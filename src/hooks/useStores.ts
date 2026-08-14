@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import { keepPreviousData, useQuery, useQueryClient } from "@tanstack/react-query";
 import { storeApi } from "@/api/storeApi";
@@ -23,18 +23,23 @@ export function useStores(options: UseStoresOptions = {}) {
   const [isOpen, setIsOpen] = useState<boolean | undefined>(options.isOpen);
   const [isLocked, setIsLocked] = useState<boolean | undefined>(options.isLocked);
   const [sortBy, setSortBy] = useState<string | undefined>(options.sortBy);
-  const [sortOrder, setSortOrder] = useState<"ASC" | "DESC" | undefined>(options.sortOrder || "DESC");
+  const [sortOrder, setSortOrder] = useState<"ASC" | "DESC" | undefined>(
+    options.sortOrder || "DESC"
+  );
   const [page, setPage] = useState(1);
 
-  const queryParams: StoreQueryParams = {
-    page,
-    limit: initialLimit,
-    search: search.trim() || undefined,
-    isOpen,
-    isLocked,
-    sortBy,
-    sortOrder,
-  };
+  const queryParams: StoreQueryParams = useMemo(
+    () => ({
+      page,
+      limit: initialLimit,
+      search: search.trim() || undefined,
+      isOpen,
+      isLocked,
+      sortBy,
+      sortOrder,
+    }),
+    [page, initialLimit, search, isOpen, isLocked, sortBy, sortOrder]
+  );
 
   const { data, isLoading, isFetching, isPlaceholderData, error, refetch } = useQuery({
     queryKey: ["stores", { isPublic, ...queryParams }],

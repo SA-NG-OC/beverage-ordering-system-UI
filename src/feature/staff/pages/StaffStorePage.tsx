@@ -41,7 +41,7 @@ export function StaffStorePage() {
         address: data.address,
         isOpen: data.isOpen,
       });
-    } catch (err: any) {
+    } catch (err: unknown) {
       setError(
         axios.isAxiosError(err)
           ? err.response?.data?.message || "Failed to load assigned store."
@@ -53,7 +53,34 @@ export function StaffStorePage() {
   };
 
   useEffect(() => {
-    fetchAssignedStore();
+    let isMounted = true;
+    storeApi
+      .getStaffStore()
+      .then((res) => {
+        if (!isMounted) return;
+        const data = res.data.data;
+        setStore(data);
+        setFormData({
+          name: data.name,
+          phone: data.phone,
+          address: data.address,
+          isOpen: data.isOpen,
+        });
+        setIsLoading(false);
+      })
+      .catch((err: unknown) => {
+        if (!isMounted) return;
+        setError(
+          axios.isAxiosError(err)
+            ? err.response?.data?.message || "Failed to load assigned store."
+            : "Failed to load assigned store."
+        );
+        setIsLoading(false);
+      });
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   const handleUpdate = async (e: React.FormEvent) => {
@@ -79,7 +106,7 @@ export function StaffStorePage() {
       setStore(res.data.data);
       setIsEditing(false);
       setSuccessMessage("Assigned store details updated successfully!");
-    } catch (err: any) {
+    } catch (err: unknown) {
       setSubmitError(
         axios.isAxiosError(err)
           ? err.response?.data?.message || "Failed to update assigned store."
@@ -110,7 +137,14 @@ export function StaffStorePage() {
         <span className="text-5xl">🏬</span>
         <h2 className="text-xl font-bold text-gray-900">Assigned Store Error</h2>
         <p className="text-sm text-gray-500">{error || "No assigned store found."}</p>
-        <Button variant="secondary" size="sm" onClick={fetchAssignedStore}>
+        <Button
+          variant="secondary"
+          size="sm"
+          onClick={() => {
+            setIsLoading(true);
+            fetchAssignedStore();
+          }}
+        >
           Retry
         </Button>
       </div>
@@ -168,15 +202,11 @@ export function StaffStorePage() {
         {isEditing ? (
           <form onSubmit={handleUpdate} className="space-y-5">
             {submitError && (
-              <div className="p-3 bg-red-50 text-red-700 rounded-xl text-xs">
-                {submitError}
-              </div>
+              <div className="p-3 bg-red-50 text-red-700 rounded-xl text-xs">{submitError}</div>
             )}
 
             <div>
-              <label className="block text-xs font-semibold text-gray-700 mb-1">
-                Store Name *
-              </label>
+              <label className="block text-xs font-semibold text-gray-700 mb-1">Store Name *</label>
               <input
                 type="text"
                 value={formData.name}
@@ -220,10 +250,7 @@ export function StaffStorePage() {
                 onChange={(e) => setFormData({ ...formData, isOpen: e.target.checked })}
                 className="w-5 h-5 text-amber-600 rounded-md border-gray-300 focus:ring-amber-500"
               />
-              <label
-                htmlFor="staffIsOpenCheck"
-                className="text-sm font-semibold text-gray-800"
-              >
+              <label htmlFor="staffIsOpenCheck" className="text-sm font-semibold text-gray-800">
                 Store is open and accepting new orders
               </label>
             </div>
