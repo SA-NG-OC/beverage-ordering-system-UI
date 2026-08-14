@@ -1,8 +1,8 @@
 import { productApi } from "@/api/productApi";
-import type { PaginationMetaDto } from "@/types/pagination.type";
-import type { ProductResponseDto, ProductStatus } from "@/types/product.type";
-import { useCallback, useEffect, useState } from "react";
+import type { ProductStatus } from "@/types/product.type";
+import { useEffect, useState } from "react";
 import axios from "axios";
+import { keepPreviousData, useQuery, useQueryClient } from "@tanstack/react-query";
 
 interface UseProductsOptions {
   isPublic?: boolean;
@@ -12,15 +12,12 @@ interface UseProductsOptions {
 }
 
 export function useProducts(options: UseProductsOptions | number = {}) {
+  const queryClient = useQueryClient();
+
   const isPublic = typeof options === "object" ? options.isPublic : false;
   const initialLimit = typeof options === "number" ? options : options.initialLimit || 8;
   const defaultStoreId = typeof options === "object" ? options.storeId : undefined;
   const defaultCategoryId = typeof options === "object" ? options.categoryId : undefined;
-
-  const [products, setProducts] = useState<ProductResponseDto[]>([]);
-  const [meta, setMeta] = useState<PaginationMetaDto | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState<ProductStatus | undefined>(undefined);
@@ -28,13 +25,31 @@ export function useProducts(options: UseProductsOptions | number = {}) {
   const [categoryId, setCategoryId] = useState<string | undefined>(defaultCategoryId);
   const [page, setPage] = useState(1);
 
-  const fetchProducts = useCallback(async () => {
-    try {
-      setIsLoading(true);
-      setError(null);
+  const queryParams = {
+    page,
+    limit: initialLimit,
+    search: search.trim() || undefined,
+    status,
+    storeId,
+    categoryId,
+  };
 
-      const params = {
-        page,
+  const { data, isLoading, isFetching, isPlaceholderData, error, refetch } = useQuery({
+    queryKey: ["products", { isPublic, ...queryParams }],
+    queryFn: async () => {
+      const response = isPublic
+        ? await productApi.getPublicProduct(queryParams)
+        : await productApi.getStaffProduct(queryParams);
+      return response.data.data;
+    },
+    placeholderData: keepPreviousData,
+  });
+
+  // Prefetch dữ liệu trang tiếp theo (Next Page) vào Cache ngay khi ở trang hiện tại
+  useEffect(() => {
+    if (data?.meta && page < data.meta.totalPages) {
+      const nextPageParams = {
+        page: page + 1,
         limit: initialLimit,
         search: search.trim() || undefined,
         status,
@@ -42,74 +57,31 @@ export function useProducts(options: UseProductsOptions | number = {}) {
         categoryId,
       };
 
-      const response = isPublic
-        ? await productApi.getPublicProduct(params)
-        : await productApi.getStaffProduct(params);
-
-      setProducts(response.data.data.items);
-      setMeta(response.data.data.meta);
-    } catch (err: unknown) {
-      if (axios.isAxiosError(err)) {
-        setError(err.response?.data?.message || "Failed to load product list.");
-      } else {
-        setError("Failed to load product list.");
-      }
-    } finally {
-      setIsLoading(false);
+      queryClient.prefetchQuery({
+        queryKey: ["products", { isPublic, ...nextPageParams }],
+        queryFn: async () => {
+          const response = isPublic
+            ? await productApi.getPublicProduct(nextPageParams)
+            : await productApi.getStaffProduct(nextPageParams);
+          return response.data.data;
+        },
+      });
     }
-  }, [page, search, status, storeId, categoryId, initialLimit, isPublic]);
+  }, [data, page, initialLimit, search, status, storeId, categoryId, isPublic, queryClient]);
 
-  useEffect(() => {
-    let isMounted = true;
-
-    const loadProducts = async () => {
-      try {
-        setError(null);
-
-        const params = {
-          page,
-          limit: initialLimit,
-          search: search.trim() || undefined,
-          status,
-          storeId,
-          categoryId,
-        };
-
-        const response = isPublic
-          ? await productApi.getPublicProduct(params)
-          : await productApi.getStaffProduct(params);
-
-        if (isMounted) {
-          setProducts(response.data.data.items);
-          setMeta(response.data.data.meta);
-        }
-      } catch (err: unknown) {
-        if (isMounted) {
-          if (axios.isAxiosError(err)) {
-            setError(err.response?.data?.message || "Failed to load product list.");
-          } else {
-            setError("Failed to load product list.");
-          }
-        }
-      } finally {
-        if (isMounted) {
-          setIsLoading(false);
-        }
-      }
-    };
-
-    loadProducts();
-
-    return () => {
-      isMounted = false;
-    };
-  }, [page, search, status, storeId, categoryId, initialLimit, isPublic]);
+  const errorMessage = error
+    ? axios.isAxiosError(error)
+      ? error.response?.data?.message || "Failed to load product list."
+      : "Failed to load product list."
+    : null;
 
   return {
-    products,
-    meta,
+    products: data?.items || [],
+    meta: data?.meta || null,
     isLoading,
-    error,
+    isFetching,
+    isPlaceholderData,
+    error: errorMessage,
     search,
     setSearch: (val: string) => {
       setSearch(val);
@@ -132,6 +104,6 @@ export function useProducts(options: UseProductsOptions | number = {}) {
     },
     page,
     setPage,
-    refresh: fetchProducts,
+    refresh: refetch,
   };
 }

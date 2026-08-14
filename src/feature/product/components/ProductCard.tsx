@@ -40,7 +40,7 @@ export function ProductCard({ product, onEdit, detailPath }: ProductCardProps) {
       <div className="p-4 space-y-2">
         <div className="flex items-center justify-between gap-2">
           <span className="text-xs font-medium text-blue-600 bg-blue-50 px-2 py-0.5 rounded">
-            {product.category?.name || "Beverage"}
+            {product.categoryName || product.category?.name || "Beverage"}
           </span>
 
           {product.store && (

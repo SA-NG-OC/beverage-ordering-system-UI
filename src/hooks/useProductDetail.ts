@@ -1,81 +1,36 @@
-import { useCallback, useEffect, useState } from "react";
 import { productApi } from "@/api/productApi";
-import type { ProductResponseDto } from "@/types/product.type";
+import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 
 export function useProductDetail(productId?: string, isPublic = false) {
-  const [product, setProduct] = useState<ProductResponseDto | null>(null);
-  const [isLoading, setIsLoading] = useState<boolean>(() => !!productId);
-  const [error, setError] = useState<string | null>(null);
-
-  const fetchDetail = useCallback(async () => {
-    if (!productId) {
-      setIsLoading(false);
-      return;
-    }
-
-    try {
-      setIsLoading(true);
-      setError(null);
+  const {
+    data: product,
+    isLoading,
+    error,
+    refetch,
+  } = useQuery({
+    queryKey: ["product-detail", productId, isPublic],
+    queryFn: async () => {
+      if (!productId) return null;
       const response = isPublic
         ? await productApi.getPublicById(productId)
         : await productApi.getById(productId);
 
-      setProduct(response.data.data);
-    } catch (err: unknown) {
-      if (axios.isAxiosError(err)) {
-        setError(err.response?.data?.message || "Failed to load product details.");
-      } else {
-        setError("Failed to load product details.");
-      }
-    } finally {
-      setIsLoading(false);
-    }
-  }, [productId, isPublic]);
+      return response.data.data;
+    },
+    enabled: !!productId,
+  });
 
-  useEffect(() => {
-    if (!productId) {
-      return;
-    }
-
-    let isMounted = true;
-
-    const loadData = async () => {
-      try {
-        setError(null);
-        const response = isPublic
-          ? await productApi.getPublicById(productId)
-          : await productApi.getById(productId);
-
-        if (isMounted) {
-          setProduct(response.data.data);
-        }
-      } catch (err: unknown) {
-        if (isMounted) {
-          if (axios.isAxiosError(err)) {
-            setError(err.response?.data?.message || "Failed to load product details.");
-          } else {
-            setError("Failed to load product details.");
-          }
-        }
-      } finally {
-        if (isMounted) {
-          setIsLoading(false);
-        }
-      }
-    };
-
-    loadData();
-
-    return () => {
-      isMounted = false;
-    };
-  }, [productId, isPublic]);
+  const errorMessage = error
+    ? axios.isAxiosError(error)
+      ? error.response?.data?.message || "Failed to load product details."
+      : "Failed to load product details."
+    : null;
 
   return {
-    product,
-    isLoading,
-    error,
-    refresh: fetchDetail,
+    product: product || null,
+    isLoading: isLoading && !!productId,
+    error: errorMessage,
+    refresh: refetch,
   };
 }

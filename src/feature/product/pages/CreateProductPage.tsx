@@ -1,129 +1,80 @@
-import { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import axios from "axios";
-
-import { useProductDetail } from "@/hooks/useProductDetail";
-import { useCategories } from "@/hooks/useCategories";
-import { productApi } from "@/api/productApi";
-import { Button } from "@/components/ui/Button";
-import { updateProductSchema, type UpdateProductFormData } from "../schemas/productSchema";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-export function EditProductPage() {
-  const { id } = useParams<{ id: string }>();
+import { productApi } from "@/api/productApi";
+import { useCategories } from "@/hooks/useCategories";
+import { Button } from "@/components/ui/Button";
+import { createProductSchema, type CreateProductFormData } from "../schemas/productSchema";
+
+export function CreateProductPage() {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const [serverError, setServerError] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
 
-  // Fetch categories for staff selection
+  // Fetch categories for dropdown selection
   const { categories, isLoading: isCategoriesLoading } = useCategories();
-
-  // Fetch product details for editing (isPublic = false for staff/admin)
-  const { product, isLoading, error: fetchError } = useProductDetail(id, false);
 
   const {
     register,
     handleSubmit,
     reset,
     formState: { errors, isSubmitting },
-  } = useForm<UpdateProductFormData>({
-    resolver: zodResolver(updateProductSchema),
+  } = useForm<CreateProductFormData>({
+    resolver: zodResolver(createProductSchema),
+    defaultValues: {
+      name: "",
+      price: 0,
+      categoryId: "",
+      status: "active",
+      description: "",
+      imageUrl: "",
+    },
   });
 
-  // Pre-fill form values when product data or categories list is loaded
-  useEffect(() => {
-    if (product) {
-      const matchedCategory = categories.find(
-        (c) => c.id === product.categoryId || c.name === product.categoryName
-      );
-      const selectedCategoryId = matchedCategory?.id || product.categoryId || "";
-
-      reset({
-        name: product.name,
-        price: Number(product.price),
-        description: product.description || "",
-        status: product.status,
-        imageUrl: product.imageUrl || "",
-        categoryId: selectedCategoryId,
-      });
-    }
-  }, [product, categories, reset]);
-
-  const queryClient = useQueryClient();
-
-  const updateProductMutation = useMutation({
-    mutationFn: async (formData: UpdateProductFormData) => {
-      if (!id) throw new Error("Missing Product ID");
-      const response = await productApi.update(id, {
+  const createProductMutation = useMutation({
+    mutationFn: async (formData: CreateProductFormData) => {
+      const response = await productApi.create({
         name: formData.name,
         price: Number(formData.price),
+        categoryId: formData.categoryId,
         status: formData.status,
         description: formData.description || undefined,
         imageUrl: formData.imageUrl || undefined,
-        categoryId: formData.categoryId || undefined,
       });
       return response.data.data;
     },
     onSuccess: () => {
-      // Vô hiệu hóa cache của chi tiết sản phẩm và danh sách sản phẩm
-      queryClient.invalidateQueries({ queryKey: ["product-detail", id] });
       queryClient.invalidateQueries({ queryKey: ["products"] });
     },
   });
 
-  const onSubmit = async (formData: UpdateProductFormData) => {
-    if (!id) return;
-
+  const onSubmit = async (formData: CreateProductFormData) => {
     try {
       setServerError(null);
       setSuccessMsg(null);
 
-      // Await và truyền formData vào mutateAsync
-      await updateProductMutation.mutateAsync(formData);
+      await createProductMutation.mutateAsync(formData);
 
-      setSuccessMsg("Product updated successfully! Redirecting...");
+      setSuccessMsg("Product created successfully! Redirecting...");
       setTimeout(() => {
-        navigate(-1);
+        navigate("/staff/products");
       }, 1200);
     } catch (err: unknown) {
       if (axios.isAxiosError(err)) {
         const message = err.response?.data?.message;
         setServerError(
-          Array.isArray(message) ? message.join(", ") : message || "Failed to update product."
+          Array.isArray(message) ? message.join(", ") : message || "Failed to create product."
         );
       } else {
-        setServerError("An unexpected error occurred.");
+        setServerError("An unexpected error occurred while creating product.");
       }
     }
   };
-
-  if (isLoading) {
-    return (
-      <div className="max-w-2xl mx-auto p-8 bg-white rounded-2xl border border-gray-100 shadow-sm animate-pulse space-y-6">
-        <div className="h-8 w-1/3 bg-gray-200 rounded" />
-        <div className="h-10 bg-gray-100 rounded-lg" />
-        <div className="h-10 bg-gray-100 rounded-lg" />
-        <div className="h-24 bg-gray-100 rounded-lg" />
-      </div>
-    );
-  }
-
-  if (fetchError || !product) {
-    return (
-      <div className="max-w-2xl mx-auto p-8 bg-white rounded-2xl border border-gray-100 text-center space-y-4">
-        <span className="text-4xl">🍹</span>
-        <h2 className="text-xl font-bold text-gray-900">Product Not Found</h2>
-        <p className="text-sm text-gray-500">
-          {fetchError || "Unable to load product for editing."}
-        </p>
-        <Button variant="secondary" onClick={() => navigate(-1)}>
-          Go Back
-        </Button>
-      </div>
-    );
-  }
 
   return (
     <div className="max-w-2xl mx-auto space-y-6">
@@ -138,10 +89,8 @@ export function EditProductPage() {
       {/* Form Container */}
       <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 sm:p-8 space-y-6">
         <div>
-          <h1 className="text-2xl font-extrabold text-gray-900">Edit Product</h1>
-          <p className="text-sm text-gray-500">
-            Update beverage details, pricing, and availability status.
-          </p>
+          <h1 className="text-2xl font-extrabold text-gray-900">Add New Product</h1>
+          <p className="text-sm text-gray-500">Add a new beverage or item to your store menu.</p>
         </div>
 
         {/* Server Error Alert */}
@@ -172,9 +121,37 @@ export function EditProductPage() {
                   ? "border-red-500 focus:ring-red-200"
                   : "border-gray-300 focus:ring-blue-200"
               }`}
-              placeholder="e.g. Milk Tea with Brown Sugar Pearls"
+              placeholder="e.g. Brown Sugar Milk Tea"
             />
             {errors.name && <p className="mt-1 text-xs text-red-600">{errors.name.message}</p>}
+          </div>
+
+          {/* Category Dropdown */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Category <span className="text-red-500">*</span>
+            </label>
+            <select
+              {...register("categoryId")}
+              disabled={isCategoriesLoading}
+              className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 text-sm bg-white ${
+                errors.categoryId
+                  ? "border-red-500 focus:ring-red-200"
+                  : "border-gray-300 focus:ring-blue-200"
+              }`}
+            >
+              <option value="">
+                {isCategoriesLoading ? "Loading categories..." : "-- Select Category --"}
+              </option>
+              {categories.map((cat) => (
+                <option key={cat.id} value={cat.id}>
+                  {cat.name}
+                </option>
+              ))}
+            </select>
+            {errors.categoryId && (
+              <p className="mt-1 text-xs text-red-600">{errors.categoryId.message}</p>
+            )}
           </div>
 
           {/* Price & Status Grid */}
@@ -200,9 +177,7 @@ export function EditProductPage() {
 
             {/* Status */}
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Status <span className="text-red-500">*</span>
-              </label>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
               <select
                 {...register("status")}
                 className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 text-sm bg-white ${
@@ -219,32 +194,6 @@ export function EditProductPage() {
                 <p className="mt-1 text-xs text-red-600">{errors.status.message}</p>
               )}
             </div>
-
-            {/* Category */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
-              <select
-                {...register("categoryId")}
-                disabled={isCategoriesLoading}
-                className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 text-sm bg-white ${
-                  errors.categoryId
-                    ? "border-red-500 focus:ring-red-200"
-                    : "border-gray-300 focus:ring-blue-200"
-                }`}
-              >
-                <option value="">
-                  {isCategoriesLoading ? "Loading categories..." : "-- Select Category --"}
-                </option>
-                {categories.map((cat) => (
-                  <option key={cat.id} value={cat.id}>
-                    {cat.name}
-                  </option>
-                ))}
-              </select>
-              {errors.categoryId && (
-                <p className="mt-1 text-xs text-red-600">{errors.categoryId.message}</p>
-              )}
-            </div>
           </div>
 
           {/* Description */}
@@ -254,7 +203,7 @@ export function EditProductPage() {
               rows={4}
               {...register("description")}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-200 text-sm"
-              placeholder="Describe taste, ingredients, size options..."
+              placeholder="Milk tea with brown sugar pearls, size M..."
             />
             {errors.description && (
               <p className="mt-1 text-xs text-red-600">{errors.description.message}</p>
@@ -268,7 +217,7 @@ export function EditProductPage() {
               type="text"
               {...register("imageUrl")}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-200 text-sm"
-              placeholder="https://example.com/image.jpg"
+              placeholder="/uploads/products/example.jpg"
             />
             {errors.imageUrl && (
               <p className="mt-1 text-xs text-red-600">{errors.imageUrl.message}</p>
@@ -292,9 +241,9 @@ export function EditProductPage() {
             <Button
               type="submit"
               variant="primary"
-              isLoading={isSubmitting || updateProductMutation.isPending}
+              isLoading={isSubmitting || createProductMutation.isPending}
             >
-              Save Changes
+              Create Product
             </Button>
           </div>
         </form>
@@ -303,4 +252,4 @@ export function EditProductPage() {
   );
 }
 
-export default EditProductPage;
+export default CreateProductPage;

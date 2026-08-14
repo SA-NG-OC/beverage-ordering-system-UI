@@ -1,3 +1,8 @@
+export interface CategoryItemDto {
+  id: string;
+  name: string;
+}
+
 export interface CategoryResponseDto {
   id: string;
   name: string;

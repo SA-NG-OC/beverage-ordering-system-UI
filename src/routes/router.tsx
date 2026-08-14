@@ -9,6 +9,7 @@ import { AdminProductsPage } from "@/feature/product/pages/AdminProductsPage";
 import { CustomerProductsPage } from "@/feature/product/pages/CustomerProductsPage";
 import { ProductDetailPage } from "@/feature/product/pages/ProductDetailPage";
 import { EditProductPage } from "@/feature/product/pages/EditProductPage";
+import { CreateProductPage } from "@/feature/product/pages/CreateProductPage";
 import { Role } from "@/types/enum/role.enum";
 import { NotFoundPage } from "@/feature/NotFoundPage";
 import AdminUsersPage from "@/feature/admin/pages/AdminUsersPage";
@@ -55,6 +56,7 @@ export const router = createBrowserRouter([
         element: <MainLayout />,
         children: [
           { path: "/staff/products", element: <StaffProductsPage /> },
+          { path: "/staff/products/create", element: <CreateProductPage /> },
           { path: "/staff/products/:id", element: <ProductDetailPage /> },
           { path: "/staff/products/:id/edit", element: <EditProductPage /> },
         ],

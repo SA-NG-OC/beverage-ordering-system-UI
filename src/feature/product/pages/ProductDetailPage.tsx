@@ -67,7 +67,7 @@ export function ProductDetailPage() {
             {/* Category & Store */}
             <div className="flex items-center gap-2">
               <span className="text-xs font-medium text-blue-600 bg-blue-50 px-2.5 py-1 rounded-md">
-                {product.category?.name || "Beverage"}
+                {product.categoryName || product.category?.name || "Beverage"}
               </span>
               {product.store && (
                 <span className="text-xs font-medium text-gray-500 bg-gray-100 px-2.5 py-1 rounded-md">

@@ -2,8 +2,10 @@ import { useProducts } from "@/hooks/useProducts";
 import type { ProductStatus } from "@/types/product.type";
 import { ProductCard } from "../components/ProductCard";
 import { Button } from "@/components/ui/Button";
+import { useNavigate } from "react-router-dom";
 
 export function StaffProductsPage() {
+  const navigate = useNavigate();
   const { products, meta, isLoading, error, search, setSearch, status, setStatus, page, setPage } =
     useProducts(8);
 
@@ -17,8 +19,11 @@ export function StaffProductsPage() {
           <p className="text-sm text-gray-500">View, search, and manage store beverage menu.</p>
         </div>
 
-        {/* Toolbar: Search & Filter */}
+        {/* Toolbar: Search, Filter & Add Button */}
         <div className="bg-white p-3 rounded-xl border border-gray-100 shadow-sm flex flex-col sm:flex-row items-center gap-3">
+          <Button variant="primary" size="sm" onClick={() => navigate("/staff/products/create")}>
+            + Add Product
+          </Button>
           {/* Search Input */}
           <div className="relative flex-1 w-full sm:w-64">
             <input

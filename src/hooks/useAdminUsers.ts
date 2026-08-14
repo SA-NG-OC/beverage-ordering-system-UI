@@ -1,112 +1,63 @@
 import { userApi } from "@/api/userApi";
-import type { PaginationMetaDto } from "@/types/pagination.type";
-import type { UserManagementResponseDto } from "@/types/user.management.type";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "axios";
-import { useCallback, useEffect, useState } from "react";
+import { useState } from "react";
 
 export function useAdminUsers(initialLimit = 10) {
-  const [users, setUsers] = useState<UserManagementResponseDto[]>([]);
-  const [meta, setMeta] = useState<PaginationMetaDto | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const queryClient = useQueryClient();
 
   const [search, setSearch] = useState("");
   const [role, setRole] = useState<string | undefined>(undefined);
   const [isBanned, setIsBanned] = useState<boolean | undefined>(undefined);
   const [page, setPage] = useState(1);
 
-  const fetchUsers = useCallback(async () => {
-    try {
-      setIsLoading(true);
-      setError(null);
-
-      const response = await userApi.getUsers({
-        page,
-        limit: initialLimit,
-        search: search.trim() || undefined,
-        role: role || undefined,
-        isBanned,
-        sortOrder: "DESC",
-      });
-
-      setUsers(response.data.data.items);
-      setMeta(response.data.data.meta);
-
-      return response.data;
-    } catch (err: unknown) {
-      if (axios.isAxiosError(err)) {
-        setError(err.response?.data?.message || "Failed to load users list");
-      } else {
-        setError("Failed to load users list.");
-      }
-    } finally {
-      setIsLoading(false);
-    }
-  }, [page, search, role, isBanned, initialLimit]);
-
-  useEffect(() => {
-    let isMounted = true;
-    const loadUsers = async () => {
-      try {
-        setError(null);
-        const response = await userApi.getUsers({
-          page,
-          limit: initialLimit,
-          search: search.trim() || undefined,
-          role: role || undefined,
-          isBanned,
-          sortOrder: "DESC",
-        });
-        if (isMounted) {
-          setUsers(response.data.data.items);
-          setMeta(response.data.data.meta);
-        }
-      } catch (err: unknown) {
-        if (isMounted) {
-          if (axios.isAxiosError(err)) {
-            setError(err.response?.data?.message || "Failed to load users list.");
-          } else {
-            setError("Failed to load users list.");
-          }
-        }
-      } finally {
-        if (isMounted) {
-          setIsLoading(false);
-        }
-      }
-    };
-    loadUsers();
-    return () => {
-      isMounted = false;
-    };
-  }, [page, search, role, isBanned, initialLimit]);
-
-  const handleLockUnlock = async (userId: string, currentlyBanned: boolean) => {
-    try {
-      setError(null);
-      if (currentlyBanned) {
-        await userApi.unlockUser(userId);
-      } else {
-        await userApi.lockUser(userId);
-      }
-
-      setUsers((prev) =>
-        prev.map((user) => (user.id === userId ? { ...user, isBanned: !currentlyBanned } : user))
-      );
-    } catch (err: unknown) {
-      if (axios.isAxiosError(err)) {
-        setError(err.response?.data?.message || "Failed to change user status.");
-      } else {
-        setError("Failed to change user status.");
-      }
-    }
+  const queryParams = {
+    page,
+    limit: initialLimit,
+    search: search.trim() || undefined,
+    role: role || undefined,
+    isBanned,
+    sortOrder: "DESC" as const,
   };
 
+  const { data, isLoading, error, refetch } = useQuery({
+    queryKey: ["admin-users", queryParams],
+    queryFn: async () => {
+      const response = await userApi.getUsers(queryParams);
+      return response.data.data;
+    },
+  });
+
+  const lockUnlockMutation = useMutation({
+    mutationFn: async ({
+      userId,
+      currentlyBanned,
+    }: {
+      userId: string;
+      currentlyBanned: boolean;
+    }) => {
+      if (currentlyBanned) {
+        return await userApi.unlockUser(userId);
+      } else {
+        return await userApi.lockUser(userId);
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin-users"] });
+    },
+  });
+
+  const errorMessage = error
+    ? axios.isAxiosError(error)
+      ? error.response?.data?.message || "Failed to load users list."
+      : "Failed to load users list."
+    : null;
+
   return {
-    users,
-    meta,
+    users: data?.items || [],
+    meta: data?.meta || null,
     isLoading,
-    error,
+    error: errorMessage,
     search,
     setSearch: (val: string) => {
       setSearch(val);
@@ -124,7 +75,8 @@ export function useAdminUsers(initialLimit = 10) {
     },
     page,
     setPage,
-    handleLockUnlock,
-    refresh: fetchUsers,
+    handleLockUnlock: (userId: string, currentlyBanned: boolean) =>
+      lockUnlockMutation.mutateAsync({ userId, currentlyBanned }),
+    refresh: refetch,
   };
 }
