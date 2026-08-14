@@ -14,35 +14,62 @@ export function MainLayout() {
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col justify-between font-sans">
       {/* Header Bar */}
-      <header className="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-gray-200 shadow-xs">
+      <header className="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-gray-200/80 shadow-xs">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
           {/* Left: Logo & Navigation */}
-          <div className="flex items-center gap-6">
+          <div className="flex items-center gap-8">
             <Link to="/" className="flex items-center gap-3 group">
-              <div className="w-10 h-10 rounded-xl bg-blue-500 flex items-center justify-center text-white text-lg font-bold shadow-md shadow-blue-500/20 group-hover:scale-105 transition-transform">
-                ☕
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center text-white shadow-md shadow-blue-500/20 group-hover:scale-105 transition-transform">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="w-5 h-5"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={2}
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M18.364 5.636l-3.536 3.536m0 0l-3.536 3.536M14.828 9.172l3.536 3.536M14.828 9.172L11.293 5.636m3.535 3.536L9.172 14.828m0 0L5.636 18.364m3.536-3.536l-3.536-3.536m3.536 3.536l3.536 3.536"
+                  />
+                </svg>
               </div>
               <div>
-                <span className="text-xl font-extrabold text-gray-900 tracking-tight">
+                <span className="text-lg font-extrabold text-gray-900 tracking-tight">
                   Beverage<span className="text-blue-600">Order</span>
                 </span>
-                <span className="block text-[10px] text-gray-500 font-medium tracking-wide uppercase">
+                <span className="block text-[10px] text-gray-400 font-semibold tracking-wider uppercase">
                   Ordering System
                 </span>
               </div>
             </Link>
 
             {/* Navigation Links */}
-            <nav className="hidden md:flex items-center gap-1">
+            <nav className="hidden md:flex items-center gap-1 text-sm font-medium">
               <Link
-                to="/products"
-                className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                  isActive("/products") || isActive("/")
-                    ? "bg-blue-50 text-blue-600"
-                    : "text-gray-600 hover:text-gray-900 hover:bg-gray-100"
+                to="/stores"
+                className={`flex items-center gap-2 px-3 py-2 rounded-xl transition-all ${
+                  isActive("/stores") || isActive("/")
+                    ? "bg-blue-50 text-blue-600 font-semibold"
+                    : "text-gray-600 hover:text-gray-900 hover:bg-gray-100/80"
                 }`}
               >
-                Menu
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="w-4 h-4"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={2}
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
+                  />
+                </svg>
+                <span>Stores</span>
               </Link>
 
               {/* Customer Routes */}
@@ -50,73 +77,95 @@ export function MainLayout() {
                 <>
                   <Link
                     to="/orders"
-                    className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                    className={`flex items-center gap-2 px-3 py-2 rounded-xl transition-all ${
                       isActive("/orders")
-                        ? "bg-blue-50 text-blue-600"
-                        : "text-gray-600 hover:text-gray-900 hover:bg-gray-100"
+                        ? "bg-blue-50 text-blue-600 font-semibold"
+                        : "text-gray-600 hover:text-gray-900 hover:bg-gray-100/80"
                     }`}
                   >
-                    My Orders
+                    <span>My Orders</span>
                   </Link>
                   <Link
                     to="/profile"
-                    className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                    className={`flex items-center gap-2 px-3 py-2 rounded-xl transition-all ${
                       isActive("/profile")
-                        ? "bg-blue-50 text-blue-600"
-                        : "text-gray-600 hover:text-gray-900 hover:bg-gray-100"
+                        ? "bg-blue-50 text-blue-600 font-semibold"
+                        : "text-gray-600 hover:text-gray-900 hover:bg-gray-100/80"
                     }`}
                   >
-                    Profile
+                    <span>Profile</span>
                   </Link>
                 </>
               )}
 
               {/* Staff Routes */}
               {isStaff && (
-                <Link
-                  to="/staff/products"
-                  className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                    isActive("/staff/products")
-                      ? "bg-amber-100 text-amber-800"
-                      : "text-amber-700 hover:bg-amber-50"
-                  }`}
-                >
-                  Staff Menu 🏪
-                </Link>
+                <div className="flex items-center gap-1 pl-2 border-l border-gray-200">
+                  <Link
+                    to="/staff/store"
+                    className={`flex items-center gap-2 px-3 py-2 rounded-xl transition-all ${
+                      isActive("/staff/store")
+                        ? "bg-amber-50 text-amber-800 font-semibold border border-amber-200/60"
+                        : "text-amber-700 hover:bg-amber-50/80"
+                    }`}
+                  >
+                    <span>My Store</span>
+                  </Link>
+                  <Link
+                    to="/staff/products"
+                    className={`flex items-center gap-2 px-3 py-2 rounded-xl transition-all ${
+                      isActive("/staff/products")
+                        ? "bg-amber-50 text-amber-800 font-semibold border border-amber-200/60"
+                        : "text-amber-700 hover:bg-amber-50/80"
+                    }`}
+                  >
+                    <span>Products</span>
+                  </Link>
+                </div>
               )}
 
               {/* Admin Routes */}
               {isAdmin && (
-                <div className="flex items-center gap-1">
+                <div className="flex items-center gap-1 pl-2 border-l border-gray-200">
                   <Link
-                    to="/admin/products"
-                    className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                      isActive("/admin/products")
-                        ? "bg-purple-100 text-purple-800"
-                        : "text-purple-700 hover:bg-purple-50"
+                    to="/admin/stores"
+                    className={`flex items-center gap-2 px-3 py-2 rounded-xl transition-all ${
+                      isActive("/admin/stores")
+                        ? "bg-purple-50 text-purple-800 font-semibold border border-purple-200/60"
+                        : "text-purple-700 hover:bg-purple-50/80"
                     }`}
                   >
-                    Admin Products ⚙️
+                    <span>Stores</span>
+                  </Link>
+                  <Link
+                    to="/admin/products"
+                    className={`flex items-center gap-2 px-3 py-2 rounded-xl transition-all ${
+                      isActive("/admin/products")
+                        ? "bg-purple-50 text-purple-800 font-semibold border border-purple-200/60"
+                        : "text-purple-700 hover:bg-purple-50/80"
+                    }`}
+                  >
+                    <span>Products</span>
                   </Link>
                   <Link
                     to="/admin/dashboard"
-                    className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                    className={`flex items-center gap-2 px-3 py-2 rounded-xl transition-all ${
                       isActive("/admin/dashboard")
-                        ? "bg-purple-100 text-purple-800"
-                        : "text-purple-700 hover:bg-purple-50"
+                        ? "bg-purple-50 text-purple-800 font-semibold border border-purple-200/60"
+                        : "text-purple-700 hover:bg-purple-50/80"
                     }`}
                   >
-                    Dashboard 📊
+                    <span>Dashboard</span>
                   </Link>
                   <Link
                     to="/admin/users"
-                    className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                    className={`flex items-center gap-2 px-3 py-2 rounded-xl transition-all ${
                       isActive("/admin/users")
-                        ? "bg-purple-100 text-purple-800"
-                        : "text-purple-700 hover:bg-purple-50"
+                        ? "bg-purple-50 text-purple-800 font-semibold border border-purple-200/60"
+                        : "text-purple-700 hover:bg-purple-50/80"
                     }`}
                   >
-                    Users 👥
+                    <span>Users</span>
                   </Link>
                 </div>
               )}
@@ -199,10 +248,10 @@ export function MainLayout() {
       </main>
 
       {/* Footer Section */}
-      <footer className="bg-white border-t border-gray-200 py-6 mt-12">
+      <footer className="bg-white border-t border-gray-200/80 py-6 mt-12">
         <div className="max-w-7xl mx-auto px-4 text-center text-xs text-gray-500 space-y-2">
           <div className="flex items-center justify-center gap-2 text-sm font-bold text-gray-800">
-            <span>☕ BeverageOrder</span>
+            <span>BeverageOrder</span>
           </div>
           <p>© {new Date().getFullYear()} Beverage Ordering System. All rights reserved.</p>
         </div>
