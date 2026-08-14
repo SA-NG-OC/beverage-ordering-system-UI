@@ -1,7 +1,7 @@
-import { useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { useStoreDetail } from "@/hooks/useStoreDetail";
 import { useProducts } from "@/hooks/useProducts";
+import { useCategories } from "@/hooks/useCategories";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { ProductCard } from "@/feature/product/components/ProductCard";
@@ -9,6 +9,7 @@ import { ProductCard } from "@/feature/product/components/ProductCard";
 export function StoreDetailPage() {
   const { id } = useParams<{ id: string }>();
   const { store, isLoading: isStoreLoading, error: storeError } = useStoreDetail(id);
+  const { categories } = useCategories();
 
   // Filter & Search states for Store Products
   const {
@@ -18,6 +19,8 @@ export function StoreDetailPage() {
     error: productsError,
     search,
     setSearch,
+    categoryId,
+    setCategoryId,
     page,
     setPage,
   } = useProducts({
@@ -25,8 +28,6 @@ export function StoreDetailPage() {
     storeId: id,
     initialLimit: 8,
   });
-
-  const [categoryFilter, setCategoryFilter] = useState<string>("all");
 
   if (isStoreLoading) {
     return (
@@ -65,9 +66,7 @@ export function StoreDetailPage() {
             </div>
             <div className="space-y-1">
               <div className="flex flex-wrap items-center gap-3">
-                <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900">
-                  {store.name}
-                </h1>
+                <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900">{store.name}</h1>
                 {store.isOpen ? (
                   <Badge variant="success">Open for Orders</Badge>
                 ) : (
@@ -121,22 +120,24 @@ export function StoreDetailPage() {
             </div>
 
             <select
-              value={categoryFilter}
-              onChange={(e) => setCategoryFilter(e.target.value)}
+              value={categoryId || "all"}
+              onChange={(e) => setCategoryId(e.target.value === "all" ? undefined : e.target.value)}
               className="px-3 py-2 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-200 text-sm bg-white text-gray-700"
             >
               <option value="all">All Categories</option>
-              <option value="tea">Tea Series</option>
-              <option value="coffee">Coffee Series</option>
-              <option value="smoothie">Smoothies & Frappe</option>
+              {categories.map((cat) => (
+                <option key={cat.id} value={cat.id}>
+                  {cat.name}
+                </option>
+              ))}
             </select>
           </div>
         </div>
 
         {/* Product Grid / Empty State */}
         {productsError ? (
-          <div className="p-4 bg-amber-50 border border-amber-200 text-amber-800 rounded-2xl text-sm">
-            Product search API for store is coming soon. (Message: {productsError})
+          <div className="p-4 bg-red-50 border border-red-200 text-red-700 rounded-2xl text-sm">
+            {productsError}
           </div>
         ) : isProductsLoading ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
