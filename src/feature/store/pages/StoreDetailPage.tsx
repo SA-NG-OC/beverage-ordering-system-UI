@@ -2,7 +2,6 @@ import { useParams, Link } from "react-router-dom";
 import { useStoreDetail } from "@/hooks/useStoreDetail";
 import { useProducts } from "@/hooks/useProducts";
 import { useCategories } from "@/hooks/useCategories";
-import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { ProductCard } from "@/feature/product/components/ProductCard";
 
@@ -58,39 +57,124 @@ export function StoreDetailPage() {
   return (
     <div className="flex flex-col gap-8">
       {/* 1. Store Header Banner */}
-      <div className="bg-white p-6 sm:p-8 rounded-3xl border border-gray-100 shadow-xs relative overflow-hidden">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6">
+      <div className="bg-white p-6 sm:p-8 rounded-3xl border border-gray-200/80 shadow-xs relative overflow-hidden">
+        {/* Subtle decorative background gradient blur */}
+        <div className="absolute -right-16 -top-16 w-64 h-64 bg-blue-50/60 rounded-full blur-3xl pointer-events-none" />
+
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-6 relative z-10">
           <div className="flex items-start sm:items-center gap-5">
-            <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center text-3xl sm:text-4xl font-extrabold shrink-0 shadow-inner">
-              ☕
+            {/* Store Icon Avatar */}
+            <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-600 text-white flex items-center justify-center shrink-0 shadow-lg shadow-blue-500/20">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="w-8 h-8 sm:w-10 sm:h-10"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={2}
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
+                />
+              </svg>
             </div>
-            <div className="space-y-1">
+
+            <div className="space-y-1.5">
               <div className="flex flex-wrap items-center gap-3">
-                <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900">{store.name}</h1>
+                <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900 tracking-tight">
+                  {store.name}
+                </h1>
                 {store.isOpen ? (
-                  <Badge variant="success">Open for Orders</Badge>
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                    Open for Orders
+                  </span>
                 ) : (
-                  <Badge variant="danger">Closed</Badge>
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-rose-50 text-rose-700 border border-rose-200">
+                    <span className="w-2 h-2 rounded-full bg-rose-500" />
+                    Closed
+                  </span>
                 )}
               </div>
-              <p className="text-sm text-gray-600 flex items-center gap-2">
-                <span>📍 {store.address}</span>
-              </p>
-              <div className="flex flex-wrap items-center gap-4 text-xs font-semibold text-gray-600 pt-1">
-                <span className="flex items-center gap-1 text-amber-600 bg-amber-50 px-2.5 py-1 rounded-lg">
-                  ⭐ {store.rating ? store.rating.toFixed(1) : "5.0"} Rating
-                </span>
-                <span className="flex items-center gap-1 text-gray-700 bg-gray-100 px-2.5 py-1 rounded-lg">
-                  📞 {store.phone}
-                </span>
+
+              <div className="flex items-center gap-2 text-sm text-gray-600">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="w-4 h-4 text-gray-400 shrink-0"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={2}
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+                  />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                  />
+                </svg>
+                <span>{store.address}</span>
+              </div>
+
+              <div className="flex flex-wrap items-center gap-3 text-xs font-semibold text-gray-600 pt-1">
+                {/* Rating Badge */}
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-amber-50 text-amber-800 border border-amber-200/70 font-semibold">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="w-4 h-4 text-amber-500 fill-amber-500"
+                    viewBox="0 0 24 24"
+                  >
+                    <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
+                  </svg>
+                  <span>{store.rating ? store.rating.toFixed(1) : "5.0"} Rating</span>
+                </div>
+
+                {/* Phone Badge */}
+                <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-xl bg-gray-50 text-gray-700 border border-gray-200/70 font-semibold">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="w-4 h-4 text-gray-400"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth={2}
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"
+                    />
+                  </svg>
+                  <span>{store.phone}</span>
+                </div>
               </div>
             </div>
           </div>
 
           <div className="self-start sm:self-center">
             <Link to="/stores">
-              <Button variant="secondary" size="sm">
-                ← All Stores
+              <Button variant="secondary" size="sm" className="gap-2">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="w-4 h-4"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={2}
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M10 19l-7-7m0 0l7-7m-7 7h18"
+                  />
+                </svg>
+                <span>All Stores</span>
               </Button>
             </Link>
           </div>
