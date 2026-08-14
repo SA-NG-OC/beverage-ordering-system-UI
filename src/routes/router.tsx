@@ -14,6 +14,9 @@ import { Role } from "@/types/enum/role.enum";
 import { NotFoundPage } from "@/feature/NotFoundPage";
 import { StoreListPage } from "@/feature/store/pages/StoreListPage";
 import { StoreDetailPage } from "@/feature/store/pages/StoreDetailPage";
+import AdminUsersPage from "@/feature/admin/pages/AdminUsersPage";
+import { AdminStoresPage } from "@/feature/admin/pages/AdminStoresPage";
+import { StaffStorePage } from "@/feature/staff/pages/StaffStorePage";
 
 export const router = createBrowserRouter([
   // 1. Auth Routes (Public)
@@ -59,6 +62,7 @@ export const router = createBrowserRouter([
       {
         element: <MainLayout />,
         children: [
+          { path: "/staff/store", element: <StaffStorePage /> },
           { path: "/staff/products", element: <StaffProductsPage /> },
           { path: "/staff/products/create", element: <CreateProductPage /> },
           { path: "/staff/products/:id", element: <ProductDetailPage /> },
@@ -75,6 +79,7 @@ export const router = createBrowserRouter([
       {
         element: <MainLayout />,
         children: [
+          { path: "/admin/stores", element: <AdminStoresPage /> },
           { path: "/admin/products", element: <AdminProductsPage /> },
           { path: "/admin/products/:id", element: <ProductDetailPage /> },
           { path: "/admin/products/:id/edit", element: <EditProductPage /> },

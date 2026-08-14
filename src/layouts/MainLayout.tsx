@@ -74,21 +74,43 @@ export function MainLayout() {
 
               {/* Staff Routes */}
               {isStaff && (
-                <Link
-                  to="/staff/products"
-                  className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                    isActive("/staff/products")
-                      ? "bg-amber-100 text-amber-800"
-                      : "text-amber-700 hover:bg-amber-50"
-                  }`}
-                >
-                  Staff Menu 🏪
-                </Link>
+                <div className="flex items-center gap-1">
+                  <Link
+                    to="/staff/store"
+                    className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                      isActive("/staff/store")
+                        ? "bg-amber-100 text-amber-800"
+                        : "text-amber-700 hover:bg-amber-50"
+                    }`}
+                  >
+                    My Store 🏪
+                  </Link>
+                  <Link
+                    to="/staff/products"
+                    className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                      isActive("/staff/products")
+                        ? "bg-amber-100 text-amber-800"
+                        : "text-amber-700 hover:bg-amber-50"
+                    }`}
+                  >
+                    Staff Products 🧋
+                  </Link>
+                </div>
               )}
 
               {/* Admin Routes */}
               {isAdmin && (
                 <div className="flex items-center gap-1">
+                  <Link
+                    to="/admin/stores"
+                    className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
+                      isActive("/admin/stores")
+                        ? "bg-purple-100 text-purple-800"
+                        : "text-purple-700 hover:bg-purple-50"
+                    }`}
+                  >
+                    Stores 🏬
+                  </Link>
                   <Link
                     to="/admin/products"
                     className={`px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
@@ -97,7 +119,7 @@ export function MainLayout() {
                         : "text-purple-700 hover:bg-purple-50"
                     }`}
                   >
-                    Admin Products ⚙️
+                    Products ⚙️
                   </Link>
                   <Link
                     to="/admin/dashboard"
