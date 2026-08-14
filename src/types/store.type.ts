@@ -14,6 +14,7 @@ export interface CreateStoreDto {
   name: string;
   phone: string;
   address: string;
+  isOpen?: boolean;
 }
 
 export interface UpdateStoreDto {
@@ -22,3 +23,4 @@ export interface UpdateStoreDto {
   address?: string;
   isOpen?: boolean;
 }
+
