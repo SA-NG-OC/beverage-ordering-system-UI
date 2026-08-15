@@ -1,53 +1,84 @@
-interface ButtonProps {
-  children: React.ReactNode;
-  variant?: "primary" | "secondary" | "danger" | "ghost";
-  size?: "sm" | "md" | "lg";
-  isLoading?: boolean;
-  disabled?: boolean;
-  type?: "button" | "submit" | "reset";
-  onClick?: () => void;
-  className?: string;
+import * as React from "react"
+import { cva, type VariantProps } from "class-variance-authority"
+import { Slot } from "radix-ui"
+
+import { cn } from "@/lib/utils"
+
+const buttonVariants = cva(
+  "group/button inline-flex shrink-0 items-center justify-center rounded-lg border border-transparent bg-clip-padding text-sm font-medium whitespace-nowrap transition-all outline-none select-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 active:not-aria-[haspopup]:translate-y-px disabled:pointer-events-none disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-3 aria-invalid:ring-destructive/20 dark:aria-invalid:border-destructive/50 dark:aria-invalid:ring-destructive/40 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 cursor-pointer",
+  {
+    variants: {
+      variant: {
+        default: "bg-primary text-primary-foreground hover:bg-primary/90 shadow-xs",
+        primary: "bg-primary text-primary-foreground hover:bg-primary/90 shadow-xs",
+        outline:
+          "border-border bg-background hover:bg-muted hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground dark:border-input dark:bg-input/30 dark:hover:bg-input/50",
+        secondary:
+          "bg-secondary text-secondary-foreground hover:bg-[color-mix(in_oklch,var(--secondary),var(--foreground)_5%)] aria-expanded:bg-secondary aria-expanded:text-secondary-foreground",
+        ghost:
+          "hover:bg-muted hover:text-foreground aria-expanded:bg-muted aria-expanded:text-foreground dark:hover:bg-muted/50",
+        destructive:
+          "bg-destructive/10 text-destructive hover:bg-destructive/20 focus-visible:border-destructive/40 focus-visible:ring-destructive/20 dark:bg-destructive/20 dark:hover:bg-destructive/30 dark:focus-visible:ring-destructive/40",
+        danger:
+          "bg-destructive/10 text-destructive hover:bg-destructive/20 focus-visible:border-destructive/40 focus-visible:ring-destructive/20 dark:bg-destructive/20 dark:hover:bg-destructive/30 dark:focus-visible:ring-destructive/40",
+        link: "text-primary underline-offset-4 hover:underline",
+      },
+      size: {
+        default:
+          "h-8 gap-1.5 px-3 py-1.5",
+        md:
+          "h-8 gap-1.5 px-3 py-1.5",
+        xs: "h-6 gap-1 rounded-md px-2 text-xs",
+        sm: "h-7 gap-1 rounded-md px-2.5 text-xs",
+        lg: "h-10 gap-2 px-4 text-sm font-semibold",
+        icon: "size-8",
+        "icon-xs": "size-6 rounded-md",
+        "icon-sm": "size-7 rounded-md",
+        "icon-lg": "size-9",
+      },
+    },
+    defaultVariants: {
+      variant: "default",
+      size: "default",
+    },
+  }
+)
+
+export interface ButtonProps
+  extends React.ComponentProps<"button">,
+    VariantProps<typeof buttonVariants> {
+  asChild?: boolean
+  isLoading?: boolean
 }
 
-export function Button({
-  children,
-  variant = "primary",
-  size = "md",
+function Button({
+  className,
+  variant = "default",
+  size = "default",
+  asChild = false,
   isLoading = false,
-  disabled = false,
-  type = "button",
-  onClick,
-  className = "",
+  disabled,
+  children,
+  ...props
 }: ButtonProps) {
-  const variantClasses: Record<string, string> = {
-    primary: "bg-blue-600 text-white hover:bg-blue-700",
-    secondary: "bg-gray-200 text-gray-800 hover:bg-gray-300",
-    danger: "bg-red-600 text-white hover:bg-red-700",
-    ghost: "bg-transparent text-gray-600 hover:bg-gray-100",
-  };
-
-  const sizeClasses: Record<string, string> = {
-    sm: "px-3 py-1.5 text-sm",
-    md: "px-4 py-2 text-base",
-    lg: "px-6 py-3 text-lg",
-  };
+  const Comp = asChild ? Slot.Root : "button"
 
   return (
-    <button
-      type={type}
+    <Comp
+      data-slot="button"
+      data-variant={variant}
+      data-size={size}
       disabled={disabled || isLoading}
-      onClick={onClick}
-      className={`
-        inline-flex items-center justify-center gap-2 rounded-lg font-medium
-        transition-colors duration-200 cursor-pointer
-        disabled:opacity-50 disabled:cursor-not-allowed
-        ${variantClasses[variant]}
-        ${sizeClasses[size]}
-        ${className}
-      `}
+      className={cn(buttonVariants({ variant, size, className }))}
+      {...props}
     >
       {isLoading && (
-        <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
+        <svg
+          className="animate-spin -ml-0.5 mr-1.5 h-3.5 w-3.5 text-current opacity-80"
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+        >
           <circle
             className="opacity-25"
             cx="12"
@@ -55,7 +86,6 @@ export function Button({
             r="10"
             stroke="currentColor"
             strokeWidth="4"
-            fill="none"
           />
           <path
             className="opacity-75"
@@ -65,6 +95,9 @@ export function Button({
         </svg>
       )}
       {children}
-    </button>
-  );
+    </Comp>
+  )
 }
+
+// eslint-disable-next-line react-refresh/only-export-components
+export { Button, buttonVariants }

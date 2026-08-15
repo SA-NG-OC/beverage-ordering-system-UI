@@ -1,73 +1,100 @@
-import { ProductStatusBadge } from "@/components/ui/Badge";
-import { Button } from "@/components/ui/Button";
-import type { ProductResponseDto } from "@/types/product.type";
-import { Link } from "react-router-dom";
+import { ProductStatusBadge } from "@/components/ui/Badge"
+import { Button } from "@/components/ui/Button"
+import { Card, CardContent } from "@/components/ui/card"
+import type { ProductResponseDto } from "@/types/product.type"
+import { formatCurrency } from "@/utils/format"
+import { Link } from "react-router-dom"
 
 interface ProductCardProps {
-  product: ProductResponseDto;
-  onEdit?: (product: ProductResponseDto) => void;
-  detailPath?: string;
+  product: ProductResponseDto
+  onEdit?: (product: ProductResponseDto) => void
+  detailPath?: string
 }
 
 export function ProductCard({ product, onEdit, detailPath }: ProductCardProps) {
-  const targetPath = detailPath || `/products/${product.id}`;
+  const targetPath = detailPath || `/products/${product.id}`
+
   return (
-    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow overflow-hidden flex flex-col justify-between">
+    <Card className="group flex flex-col justify-between overflow-hidden transition-all duration-200 hover:shadow-md border-border bg-card">
       <div>
-        {/* Product Image Link*/}
-        <div className="relative w-full h-48 bg-gray-100 overflow-hidden">
-          <Link to={targetPath} className="relative block w-full h-48 bg-gray-100 overflow-hidden">
+        {/* Product Image */}
+        <div className="relative w-full h-48 bg-muted overflow-hidden">
+          <Link to={targetPath} className="block w-full h-full">
             {product.imageUrl ? (
               <img
                 src={product.imageUrl}
                 alt={product.name}
-                className="w-full h-full object-cover transition-transform duration-300 hover:scale-110"
+                className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
               />
             ) : (
-              <div className="w-full h-full flex items-center justify-center text-4xl bg-blue-50 text-blue-500 font-bold">
-                🧋
+              <div className="w-full h-full flex flex-col items-center justify-center text-muted-foreground bg-muted/60 p-4">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-10 w-10 stroke-1 text-muted-foreground/60 mb-1"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={1.5}
+                    d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                  />
+                </svg>
+                <span className="text-[11px] font-medium tracking-tight">No image</span>
               </div>
             )}
           </Link>
 
-          <div className="absolute top-3 left-3">
+          <div className="absolute top-2.5 left-2.5">
             <ProductStatusBadge status={product.status} />
           </div>
         </div>
-      </div>
 
-      {/* Product detail */}
-      <div className="p-4 space-y-2">
-        <div className="flex items-center justify-between gap-2">
-          <span className="text-xs font-medium text-blue-600 bg-blue-50 px-2 py-0.5 rounded">
-            {product.categoryName || product.category?.name || "Beverage"}
-          </span>
-
-          {product.store && (
-            <span className="text-xs text-gray-500 truncate max-w-[120px]">
-              🏪 {product.store.name}
+        {/* Product Details */}
+        <CardContent className="p-4 space-y-2">
+          <div className="flex items-center justify-between gap-2">
+            <span className="text-[11px] font-medium text-primary bg-primary/10 px-2 py-0.5 rounded-md">
+              {product.categoryName || product.category?.name || "Beverage"}
             </span>
-          )}
-        </div>
 
-        <p className="font-bold text-gray-900 text-base line-clamp-1">{product.name}</p>
+            {product.store && (
+              <span className="text-[11px] text-muted-foreground truncate max-w-[120px]">
+                {product.store.name}
+              </span>
+            )}
+          </div>
 
-        <p className="text-xs text-gray-500 line-clamp-2 min-h-[32px]">
-          {product.description || "No description available."}
-        </p>
+          <Link to={targetPath} className="block">
+            <h4 className="font-semibold text-foreground text-sm line-clamp-1 group-hover:text-primary transition-colors">
+              {product.name}
+            </h4>
+          </Link>
+
+          <p className="text-xs text-muted-foreground line-clamp-2 min-h-[32px] leading-relaxed">
+            {product.description || "No description available."}
+          </p>
+        </CardContent>
       </div>
 
       {/* Price & Actions */}
-      <div className="p-4 pt-0 border-t border-gray-50 flex items-center justify-between mt-2">
-        <span className="text-lg font-extrabold text-blue-600">
-          {Number(product.price).toLocaleString("vi-VN")} đ
+      <div className="p-4 pt-0 flex items-center justify-between border-t border-border/50 mt-1">
+        <span className="text-base font-bold text-foreground">
+          {formatCurrency(product.price)}
         </span>
-        {onEdit && (
-          <Button variant="ghost" size="sm" onClick={() => onEdit(product)}>
+        {onEdit ? (
+          <Button variant="outline" size="sm" onClick={() => onEdit(product)}>
             Edit
           </Button>
+        ) : (
+          <Link to={targetPath}>
+            <Button variant="secondary" size="sm">
+              View
+            </Button>
+          </Link>
         )}
       </div>
-    </div>
-  );
+    </Card>
+  )
 }
