@@ -10,6 +10,10 @@ import { CustomerProductsPage } from "@/feature/product/pages/CustomerProductsPa
 import { ProductDetailPage } from "@/feature/product/pages/ProductDetailPage";
 import { EditProductPage } from "@/feature/product/pages/EditProductPage";
 import { CreateProductPage } from "@/feature/product/pages/CreateProductPage";
+import { CustomerOrdersPage } from "@/feature/orders/pages/CustomerOrdersPage";
+import { CustomerOrderDetailPage } from "@/feature/orders/pages/CustomerOrderDetailPage";
+import { StaffOrdersPage } from "@/feature/staff/pages/StaffOrdersPage";
+import { AdminOrdersPage } from "@/feature/admin/pages/AdminOrdersPage";
 import { Role } from "@/types/enum/role.enum";
 import { NotFoundPage } from "@/feature/NotFoundPage";
 import { StoreListPage } from "@/feature/store/pages/StoreListPage";
@@ -60,13 +64,11 @@ export const router = createBrowserRouter([
           },
           {
             path: "/orders",
-            element: (
-              <PlaceholderPage
-                title="Your Orders"
-                description="Track live beverage orders, view order history, and reorder your favorite drinks."
-                tag="Orders"
-              />
-            ),
+            element: <CustomerOrdersPage />,
+          },
+          {
+            path: "/orders/:id",
+            element: <CustomerOrderDetailPage />,
           },
         ],
       },
@@ -81,6 +83,7 @@ export const router = createBrowserRouter([
         element: <MainLayout />,
         children: [
           { path: "/staff/store", element: <StaffStorePage /> },
+          { path: "/staff/orders", element: <StaffOrdersPage /> },
           { path: "/staff/products", element: <StaffProductsPage /> },
           { path: "/staff/products/create", element: <CreateProductPage /> },
           { path: "/staff/products/:id", element: <ProductDetailPage /> },
@@ -101,6 +104,7 @@ export const router = createBrowserRouter([
           { path: "/admin/products", element: <AdminProductsPage /> },
           { path: "/admin/products/:id", element: <ProductDetailPage /> },
           { path: "/admin/products/:id/edit", element: <EditProductPage /> },
+          { path: "/admin/orders", element: <AdminOrdersPage /> },
           {
             path: "/admin/dashboard",
             element: (
