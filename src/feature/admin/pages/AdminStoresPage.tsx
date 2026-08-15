@@ -1,20 +1,20 @@
-import { useState } from "react"
-import axios from "axios"
-import { useStores } from "@/hooks/useStores"
-import { storeApi } from "@/api/storeApi"
-import type { StoreResponseDto, CreateStoreDto, UpdateStoreDto } from "@/types/store.type"
-import { Button } from "@/components/ui/Button"
-import { Badge } from "@/components/ui/Badge"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
-import { Checkbox } from "@/components/ui/checkbox"
-import { Card } from "@/components/ui/card"
-import { Alert, AlertDescription } from "@/components/ui/alert"
-import { SearchToolbar } from "@/components/SearchToolbar"
-import { Pagination } from "@/components/Pagination"
-import { EmptyState } from "@/components/EmptyState"
-import { Skeleton } from "@/components/ui/skeleton"
-import { FormField } from "@/components/FormField"
+import { useState } from "react";
+import axios from "axios";
+import { useStores } from "@/hooks/useStores";
+import { storeApi } from "@/api/storeApi";
+import type { StoreResponseDto, CreateStoreDto, UpdateStoreDto } from "@/types/store.type";
+import { Button } from "@/components/ui/Button";
+import { Badge } from "@/components/ui/Badge";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Card } from "@/components/ui/card";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { SearchToolbar } from "@/components/SearchToolbar";
+import { Pagination } from "@/components/Pagination";
+import { EmptyState } from "@/components/EmptyState";
+import { Skeleton } from "@/components/ui/skeleton";
+import { FormField } from "@/components/FormField";
 import {
   Table,
   TableBody,
@@ -22,7 +22,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
+} from "@/components/ui/table";
 
 export function AdminStoresPage() {
   const {
@@ -41,132 +41,132 @@ export function AdminStoresPage() {
   } = useStores({
     isPublic: false,
     initialLimit: 10,
-  })
+  });
 
   // Modal States
-  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false)
-  const [editingStore, setEditingStore] = useState<StoreResponseDto | null>(null)
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [editingStore, setEditingStore] = useState<StoreResponseDto | null>(null);
 
   // Form States
   const [formData, setFormData] = useState<{
-    name: string
-    phone: string
-    address: string
-    isOpen: boolean
+    name: string;
+    phone: string;
+    address: string;
+    isOpen: boolean;
   }>({
     name: "",
     phone: "",
     address: "",
     isOpen: true,
-  })
+  });
 
-  const [formError, setFormError] = useState<string | null>(null)
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [actionLoadingId, setActionLoadingId] = useState<string | null>(null)
+  const [formError, setFormError] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [actionLoadingId, setActionLoadingId] = useState<string | null>(null);
 
   const resetForm = () => {
-    setFormData({ name: "", phone: "", address: "", isOpen: true })
-    setFormError(null)
-  }
+    setFormData({ name: "", phone: "", address: "", isOpen: true });
+    setFormError(null);
+  };
 
   const handleOpenCreateModal = () => {
-    resetForm()
-    setIsCreateModalOpen(true)
-  }
+    resetForm();
+    setIsCreateModalOpen(true);
+  };
 
   const handleOpenEditModal = (store: StoreResponseDto) => {
-    setEditingStore(store)
+    setEditingStore(store);
     setFormData({
       name: store.name,
       phone: store.phone,
       address: store.address,
       isOpen: store.isOpen,
-    })
-    setFormError(null)
-  }
+    });
+    setFormError(null);
+  };
 
   const handleCreateSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
     if (!formData.name.trim() || !formData.phone.trim() || !formData.address.trim()) {
-      setFormError("Please fill in all required fields (Name, Phone, Address).")
-      return
+      setFormError("Please fill in all required fields (Name, Phone, Address).");
+      return;
     }
 
     try {
-      setIsSubmitting(true)
-      setFormError(null)
+      setIsSubmitting(true);
+      setFormError(null);
       const payload: CreateStoreDto = {
         name: formData.name.trim(),
         phone: formData.phone.trim(),
         address: formData.address.trim(),
         isOpen: formData.isOpen,
-      }
-      await storeApi.createStore(payload)
-      setIsCreateModalOpen(false)
-      resetForm()
-      refresh()
+      };
+      await storeApi.createStore(payload);
+      setIsCreateModalOpen(false);
+      resetForm();
+      refresh();
     } catch (err: unknown) {
       setFormError(
         axios.isAxiosError(err)
           ? err.response?.data?.message || "Failed to create store."
           : "Failed to create store."
-      )
+      );
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-  }
+  };
 
   const handleEditSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!editingStore) return
+    e.preventDefault();
+    if (!editingStore) return;
     if (!formData.name.trim() || !formData.phone.trim() || !formData.address.trim()) {
-      setFormError("Please fill in all required fields.")
-      return
+      setFormError("Please fill in all required fields.");
+      return;
     }
 
     try {
-      setIsSubmitting(true)
-      setFormError(null)
+      setIsSubmitting(true);
+      setFormError(null);
       const payload: UpdateStoreDto = {
         name: formData.name.trim(),
         phone: formData.phone.trim(),
         address: formData.address.trim(),
         isOpen: formData.isOpen,
-      }
-      await storeApi.updateStore(editingStore.id, payload)
-      setEditingStore(null)
-      resetForm()
-      refresh()
+      };
+      await storeApi.updateStore(editingStore.id, payload);
+      setEditingStore(null);
+      resetForm();
+      refresh();
     } catch (err: unknown) {
       setFormError(
         axios.isAxiosError(err)
           ? err.response?.data?.message || "Failed to update store."
           : "Failed to update store."
-      )
+      );
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-  }
+  };
 
   const handleToggleLock = async (store: StoreResponseDto) => {
     try {
-      setActionLoadingId(store.id)
+      setActionLoadingId(store.id);
       if (store.isLocked) {
-        await storeApi.unlockStore(store.id)
+        await storeApi.unlockStore(store.id);
       } else {
-        await storeApi.lockStore(store.id)
+        await storeApi.lockStore(store.id);
       }
-      refresh()
+      refresh();
     } catch (err: unknown) {
       alert(
         axios.isAxiosError(err)
           ? err.response?.data?.message || "Failed to change lock status."
           : "Failed to change lock status."
-      )
+      );
     } finally {
-      setActionLoadingId(null)
+      setActionLoadingId(null);
     }
-  }
+  };
 
   return (
     <div className="flex flex-col gap-6">
@@ -213,8 +213,8 @@ export function AdminStoresPage() {
         <select
           value={isOpen === undefined ? "all" : isOpen ? "true" : "false"}
           onChange={(e) => {
-            const val = e.target.value
-            setIsOpen(val === "all" ? undefined : val === "true")
+            const val = e.target.value;
+            setIsOpen(val === "all" ? undefined : val === "true");
           }}
           className="h-9 px-3 border border-border rounded-lg text-xs bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
         >
@@ -227,8 +227,8 @@ export function AdminStoresPage() {
         <select
           value={isLocked === undefined ? "all" : isLocked ? "true" : "false"}
           onChange={(e) => {
-            const val = e.target.value
-            setIsLocked(val === "all" ? undefined : val === "true")
+            const val = e.target.value;
+            setIsLocked(val === "all" ? undefined : val === "true");
           }}
           className="h-9 px-3 border border-border rounded-lg text-xs bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
         >
@@ -324,11 +324,7 @@ export function AdminStoresPage() {
                   </TableCell>
                   <TableCell className="text-right">
                     <div className="flex items-center justify-end gap-1.5">
-                      <Button
-                        variant="outline"
-                        size="xs"
-                        onClick={() => handleOpenEditModal(s)}
-                      >
+                      <Button variant="outline" size="xs" onClick={() => handleOpenEditModal(s)}>
                         Edit
                       </Button>
 
@@ -376,8 +372,8 @@ export function AdminStoresPage() {
               <button
                 type="button"
                 onClick={() => {
-                  setIsCreateModalOpen(false)
-                  setEditingStore(null)
+                  setIsCreateModalOpen(false);
+                  setEditingStore(null);
                 }}
                 className="text-muted-foreground hover:text-foreground text-sm font-semibold p-1 rounded-md cursor-pointer"
               >
@@ -453,8 +449,8 @@ export function AdminStoresPage() {
                   variant="outline"
                   size="sm"
                   onClick={() => {
-                    setIsCreateModalOpen(false)
-                    setEditingStore(null)
+                    setIsCreateModalOpen(false);
+                    setEditingStore(null);
                   }}
                 >
                   Cancel
@@ -468,7 +464,7 @@ export function AdminStoresPage() {
         </div>
       )}
     </div>
-  )
+  );
 }
 
-export default AdminStoresPage
+export default AdminStoresPage;

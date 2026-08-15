@@ -1,15 +1,15 @@
-import { Link, Outlet, useLocation } from "react-router-dom"
-import { useAuth } from "@/hooks/useAuth"
-import { Button } from "@/components/ui/Button"
+import { Link, Outlet, useLocation } from "react-router-dom";
+import { useAuth } from "@/hooks/useAuth";
+import { Button } from "@/components/ui/Button";
 
 export function MainLayout() {
-  const { user, isAuthenticated, logout, isAdmin, isStaff, isCustomer } = useAuth()
-  const location = useLocation()
+  const { user, isAuthenticated, logout, isAdmin, isStaff, isCustomer } = useAuth();
+  const location = useLocation();
 
   const isActive = (path: string) => {
-    if (path === "/") return location.pathname === "/"
-    return location.pathname.startsWith(path)
-  }
+    if (path === "/") return location.pathname === "/";
+    return location.pathname.startsWith(path);
+  };
 
   return (
     <div className="min-h-screen bg-muted/20 flex flex-col justify-between font-sans">
@@ -206,9 +206,7 @@ export function MainLayout() {
                   <span className="text-xs font-semibold text-foreground leading-tight">
                     {user.fullName}
                   </span>
-                  <span className="text-[10px] text-muted-foreground capitalize">
-                    {user.role}
-                  </span>
+                  <span className="text-[10px] text-muted-foreground capitalize">{user.role}</span>
                 </div>
 
                 <div className="w-8 h-8 rounded-full bg-primary/10 text-primary font-bold flex items-center justify-center text-xs border border-primary/20">
@@ -257,7 +255,7 @@ export function MainLayout() {
         </div>
       </footer>
     </div>
-  )
+  );
 }
 
-export default MainLayout
+export default MainLayout;

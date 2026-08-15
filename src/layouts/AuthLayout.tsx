@@ -1,4 +1,4 @@
-import { Link, Outlet } from "react-router-dom"
+import { Link, Outlet } from "react-router-dom";
 
 export function AuthLayout() {
   return (
@@ -45,7 +45,7 @@ export function AuthLayout() {
         <p>© {new Date().getFullYear()} Beverage Ordering System. All rights reserved.</p>
       </footer>
     </div>
-  )
+  );
 }
 
-export default AuthLayout
+export default AuthLayout;

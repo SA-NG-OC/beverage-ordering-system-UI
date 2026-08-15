@@ -1,28 +1,28 @@
-import { useState } from "react"
-import { useNavigate } from "react-router-dom"
-import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import axios from "axios"
-import { useMutation, useQueryClient } from "@tanstack/react-query"
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import axios from "axios";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-import { productApi } from "@/api/productApi"
-import { useCategories } from "@/hooks/useCategories"
-import { Button } from "@/components/ui/Button"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
-import { Alert, AlertDescription } from "@/components/ui/alert"
-import { FormField } from "@/components/FormField"
-import { createProductSchema, type CreateProductFormData } from "../schemas/productSchema"
+import { productApi } from "@/api/productApi";
+import { useCategories } from "@/hooks/useCategories";
+import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { FormField } from "@/components/FormField";
+import { createProductSchema, type CreateProductFormData } from "../schemas/productSchema";
 
 export function CreateProductPage() {
-  const navigate = useNavigate()
-  const queryClient = useQueryClient()
-  const [serverError, setServerError] = useState<string | null>(null)
-  const [successMsg, setSuccessMsg] = useState<string | null>(null)
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const [serverError, setServerError] = useState<string | null>(null);
+  const [successMsg, setSuccessMsg] = useState<string | null>(null);
 
   // Fetch categories for dropdown selection
-  const { categories, isLoading: isCategoriesLoading } = useCategories()
+  const { categories, isLoading: isCategoriesLoading } = useCategories();
 
   const {
     register,
@@ -39,7 +39,7 @@ export function CreateProductPage() {
       description: "",
       imageUrl: "",
     },
-  })
+  });
 
   const createProductMutation = useMutation({
     mutationFn: async (formData: CreateProductFormData) => {
@@ -50,36 +50,36 @@ export function CreateProductPage() {
         status: formData.status,
         description: formData.description || undefined,
         imageUrl: formData.imageUrl || undefined,
-      })
-      return response.data.data
+      });
+      return response.data.data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["products"] })
+      queryClient.invalidateQueries({ queryKey: ["products"] });
     },
-  })
+  });
 
   const onSubmit = async (formData: CreateProductFormData) => {
     try {
-      setServerError(null)
-      setSuccessMsg(null)
+      setServerError(null);
+      setSuccessMsg(null);
 
-      await createProductMutation.mutateAsync(formData)
+      await createProductMutation.mutateAsync(formData);
 
-      setSuccessMsg("Product created successfully! Redirecting...")
+      setSuccessMsg("Product created successfully! Redirecting...");
       setTimeout(() => {
-        navigate("/staff/products")
-      }, 1200)
+        navigate("/staff/products");
+      }, 1200);
     } catch (err: unknown) {
       if (axios.isAxiosError(err)) {
-        const message = err.response?.data?.message
+        const message = err.response?.data?.message;
         setServerError(
           Array.isArray(message) ? message.join(", ") : message || "Failed to create product."
-        )
+        );
       } else {
-        setServerError("An unexpected error occurred while creating product.")
+        setServerError("An unexpected error occurred while creating product.");
       }
     }
-  }
+  };
 
   return (
     <div className="max-w-2xl mx-auto space-y-4">
@@ -97,7 +97,11 @@ export function CreateProductPage() {
           stroke="currentColor"
           strokeWidth={2}
         >
-          <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"
+          />
         </svg>
         Cancel & Go Back
       </button>
@@ -234,7 +238,7 @@ export function CreateProductPage() {
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }
 
-export default CreateProductPage
+export default CreateProductPage;

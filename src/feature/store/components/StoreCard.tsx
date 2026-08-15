@@ -1,11 +1,11 @@
-import { Link } from "react-router-dom"
-import type { StoreResponseDto } from "@/types/store.type"
-import { Button } from "@/components/ui/Button"
-import { Card, CardContent } from "@/components/ui/card"
-import { formatDate } from "@/utils/format"
+import { Link } from "react-router-dom";
+import type { StoreResponseDto } from "@/types/store.type";
+import { Button } from "@/components/ui/Button";
+import { Card, CardContent } from "@/components/ui/card";
+import { formatDate } from "@/utils/format";
 
 interface StoreCardProps {
-  store: StoreResponseDto
+  store: StoreResponseDto;
 }
 
 export function StoreCard({ store }: StoreCardProps) {
@@ -111,9 +111,7 @@ export function StoreCard({ store }: StoreCardProps) {
 
       {/* Footer */}
       <div className="p-4 bg-muted/30 border-t border-border flex items-center justify-between gap-3">
-        <span className="text-[11px] text-muted-foreground">
-          {formatDate(store.createdAt)}
-        </span>
+        <span className="text-[11px] text-muted-foreground">{formatDate(store.createdAt)}</span>
         <Link to={`/stores/${store.id}`}>
           <Button variant="default" size="sm">
             View Menu
@@ -121,7 +119,7 @@ export function StoreCard({ store }: StoreCardProps) {
         </Link>
       </div>
     </Card>
-  )
+  );
 }
 
-export default StoreCard
+export default StoreCard;

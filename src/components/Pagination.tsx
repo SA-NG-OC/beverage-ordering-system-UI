@@ -1,14 +1,14 @@
-import { Button } from "@/components/ui/Button"
-import { cn } from "@/lib/utils"
+import { Button } from "@/components/ui/Button";
+import { cn } from "@/lib/utils";
 
 interface PaginationProps {
-  page: number
-  totalPages: number
-  totalItems?: number
-  itemName?: string
-  isLoading?: boolean
-  onPageChange: (newPage: number) => void
-  className?: string
+  page: number;
+  totalPages: number;
+  totalItems?: number;
+  itemName?: string;
+  isLoading?: boolean;
+  onPageChange: (newPage: number) => void;
+  className?: string;
 }
 
 export function Pagination({
@@ -20,7 +20,7 @@ export function Pagination({
   onPageChange,
   className,
 }: PaginationProps) {
-  if (totalPages <= 1) return null
+  if (totalPages <= 1) return null;
 
   return (
     <div
@@ -63,5 +63,5 @@ export function Pagination({
         </Button>
       </div>
     </div>
-  )
+  );
 }

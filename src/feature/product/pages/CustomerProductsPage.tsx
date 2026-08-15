@@ -1,16 +1,16 @@
-import { useProducts } from "@/hooks/useProducts"
-import { ProductCard } from "../components/ProductCard"
-import { SearchToolbar } from "@/components/SearchToolbar"
-import { Pagination } from "@/components/Pagination"
-import { EmptyState } from "@/components/EmptyState"
-import { Skeleton } from "@/components/ui/skeleton"
-import { Alert, AlertDescription } from "@/components/ui/alert"
+import { useProducts } from "@/hooks/useProducts";
+import { ProductCard } from "../components/ProductCard";
+import { SearchToolbar } from "@/components/SearchToolbar";
+import { Pagination } from "@/components/Pagination";
+import { EmptyState } from "@/components/EmptyState";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 export function CustomerProductsPage() {
   const { products, meta, isLoading, error, search, setSearch, setPage } = useProducts({
     initialLimit: 8,
     isPublic: true,
-  })
+  });
 
   return (
     <div className="flex flex-col gap-6">
@@ -73,7 +73,7 @@ export function CustomerProductsPage() {
         />
       )}
     </div>
-  )
+  );
 }
 
-export default CustomerProductsPage
+export default CustomerProductsPage;

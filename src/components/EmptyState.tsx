@@ -1,12 +1,12 @@
-import * as React from "react"
-import { cn } from "@/lib/utils"
+import * as React from "react";
+import { cn } from "@/lib/utils";
 
 interface EmptyStateProps {
-  title?: string
-  description?: string
-  action?: React.ReactNode
-  icon?: React.ReactNode
-  className?: string
+  title?: string;
+  description?: string;
+  action?: React.ReactNode;
+  icon?: React.ReactNode;
+  className?: string;
 }
 
 export function EmptyState({
@@ -43,15 +43,9 @@ export function EmptyState({
           </svg>
         </div>
       )}
-      <h3 className="text-base font-semibold text-foreground tracking-tight">
-        {title}
-      </h3>
-      {description && (
-        <p className="mt-1 text-xs text-muted-foreground max-w-sm">
-          {description}
-        </p>
-      )}
+      <h3 className="text-base font-semibold text-foreground tracking-tight">{title}</h3>
+      {description && <p className="mt-1 text-xs text-muted-foreground max-w-sm">{description}</p>}
       {action && <div className="mt-4">{action}</div>}
     </div>
-  )
+  );
 }

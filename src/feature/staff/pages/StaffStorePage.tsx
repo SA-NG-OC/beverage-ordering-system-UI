@@ -1,129 +1,129 @@
-import { useEffect, useState } from "react"
-import { storeApi } from "@/api/storeApi"
-import type { StoreResponseDto, UpdateStoreDto } from "@/types/store.type"
-import { Button } from "@/components/ui/Button"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
-import { Checkbox } from "@/components/ui/checkbox"
-import { Card, CardContent } from "@/components/ui/card"
-import { Alert, AlertDescription } from "@/components/ui/alert"
-import { Skeleton } from "@/components/ui/skeleton"
-import { EmptyState } from "@/components/EmptyState"
-import { FormField } from "@/components/FormField"
-import { formatDate } from "@/utils/format"
-import axios from "axios"
+import { useEffect, useState } from "react";
+import { storeApi } from "@/api/storeApi";
+import type { StoreResponseDto, UpdateStoreDto } from "@/types/store.type";
+import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Card, CardContent } from "@/components/ui/card";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Skeleton } from "@/components/ui/skeleton";
+import { EmptyState } from "@/components/EmptyState";
+import { FormField } from "@/components/FormField";
+import { formatDate } from "@/utils/format";
+import axios from "axios";
 
 export function StaffStorePage() {
-  const [store, setStore] = useState<StoreResponseDto | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
+  const [store, setStore] = useState<StoreResponseDto | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   // Edit Mode state
-  const [isEditing, setIsEditing] = useState(false)
+  const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState<{
-    name: string
-    phone: string
-    address: string
-    isOpen: boolean
+    name: string;
+    phone: string;
+    address: string;
+    isOpen: boolean;
   }>({
     name: "",
     phone: "",
     address: "",
     isOpen: true,
-  })
+  });
 
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [submitError, setSubmitError] = useState<string | null>(null)
-  const [successMessage, setSuccessMessage] = useState<string | null>(null)
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   const fetchAssignedStore = async () => {
     try {
-      setIsLoading(true)
-      setError(null)
-      const res = await storeApi.getStaffStore()
-      const data = res.data.data
-      setStore(data)
+      setIsLoading(true);
+      setError(null);
+      const res = await storeApi.getStaffStore();
+      const data = res.data.data;
+      setStore(data);
       setFormData({
         name: data.name,
         phone: data.phone,
         address: data.address,
         isOpen: data.isOpen,
-      })
+      });
     } catch (err: unknown) {
       setError(
         axios.isAxiosError(err)
           ? err.response?.data?.message || "Failed to load assigned store."
           : "Failed to load assigned store."
-      )
+      );
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   useEffect(() => {
-    let isMounted = true
+    let isMounted = true;
     storeApi
       .getStaffStore()
       .then((res) => {
-        if (!isMounted) return
-        const data = res.data.data
-        setStore(data)
+        if (!isMounted) return;
+        const data = res.data.data;
+        setStore(data);
         setFormData({
           name: data.name,
           phone: data.phone,
           address: data.address,
           isOpen: data.isOpen,
-        })
-        setIsLoading(false)
+        });
+        setIsLoading(false);
       })
       .catch((err: unknown) => {
-        if (!isMounted) return
+        if (!isMounted) return;
         setError(
           axios.isAxiosError(err)
             ? err.response?.data?.message || "Failed to load assigned store."
             : "Failed to load assigned store."
-        )
-        setIsLoading(false)
-      })
+        );
+        setIsLoading(false);
+      });
 
     return () => {
-      isMounted = false
-    }
-  }, [])
+      isMounted = false;
+    };
+  }, []);
 
   const handleUpdate = async (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
     if (!formData.name.trim() || !formData.phone.trim() || !formData.address.trim()) {
-      setSubmitError("Please fill in all required fields.")
-      return
+      setSubmitError("Please fill in all required fields.");
+      return;
     }
 
     try {
-      setIsSubmitting(true)
-      setSubmitError(null)
-      setSuccessMessage(null)
+      setIsSubmitting(true);
+      setSubmitError(null);
+      setSuccessMessage(null);
 
       const payload: UpdateStoreDto = {
         name: formData.name.trim(),
         phone: formData.phone.trim(),
         address: formData.address.trim(),
         isOpen: formData.isOpen,
-      }
+      };
 
-      const res = await storeApi.updateStaffStore(payload)
-      setStore(res.data.data)
-      setIsEditing(false)
-      setSuccessMessage("Assigned store details updated successfully!")
+      const res = await storeApi.updateStaffStore(payload);
+      setStore(res.data.data);
+      setIsEditing(false);
+      setSuccessMessage("Assigned store details updated successfully!");
     } catch (err: unknown) {
       setSubmitError(
         axios.isAxiosError(err)
           ? err.response?.data?.message || "Failed to update assigned store."
           : "Failed to update assigned store."
-      )
+      );
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-  }
+  };
 
   if (isLoading) {
     return (
@@ -135,7 +135,7 @@ export function StaffStorePage() {
           <Skeleton className="h-20 w-full" />
         </Card>
       </div>
-    )
+    );
   }
 
   if (error || !store) {
@@ -149,8 +149,8 @@ export function StaffStorePage() {
               variant="outline"
               size="sm"
               onClick={() => {
-                setIsLoading(true)
-                fetchAssignedStore()
+                setIsLoading(true);
+                fetchAssignedStore();
               }}
             >
               Retry
@@ -158,7 +158,7 @@ export function StaffStorePage() {
           }
         />
       </div>
-    )
+    );
   }
 
   return (
@@ -324,7 +324,7 @@ export function StaffStorePage() {
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }
 
-export default StaffStorePage
+export default StaffStorePage;

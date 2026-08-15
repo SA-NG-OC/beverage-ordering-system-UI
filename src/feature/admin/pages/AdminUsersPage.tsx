@@ -1,12 +1,12 @@
-import { useAdminUsers } from "@/hooks/useAdminUsers"
-import { Button } from "@/components/ui/Button"
-import { Badge } from "@/components/ui/Badge"
-import { SearchToolbar } from "@/components/SearchToolbar"
-import { Pagination } from "@/components/Pagination"
-import { EmptyState } from "@/components/EmptyState"
-import { Skeleton } from "@/components/ui/skeleton"
-import { Alert, AlertDescription } from "@/components/ui/alert"
-import { Card } from "@/components/ui/card"
+import { useAdminUsers } from "@/hooks/useAdminUsers";
+import { Button } from "@/components/ui/Button";
+import { Badge } from "@/components/ui/Badge";
+import { SearchToolbar } from "@/components/SearchToolbar";
+import { Pagination } from "@/components/Pagination";
+import { EmptyState } from "@/components/EmptyState";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Card } from "@/components/ui/card";
 import {
   Table,
   TableBody,
@@ -14,8 +14,8 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table"
-import { formatDate } from "@/utils/format"
+} from "@/components/ui/table";
+import { formatDate } from "@/utils/format";
 
 export function AdminUsersPage() {
   const {
@@ -31,19 +31,19 @@ export function AdminUsersPage() {
     setIsBanned,
     setPage,
     handleLockUnlock,
-  } = useAdminUsers(10)
+  } = useAdminUsers(10);
 
   const getRoleBadgeVariant = (userRole: string) => {
     switch (userRole) {
       case "admin":
-        return "info"
+        return "info";
       case "staff":
-        return "warning"
+        return "warning";
       case "customer":
       default:
-        return "neutral"
+        return "neutral";
     }
-  }
+  };
 
   return (
     <div className="flex flex-col gap-6">
@@ -82,9 +82,9 @@ export function AdminUsersPage() {
         <select
           value={isBanned === undefined ? "" : isBanned ? "true" : "false"}
           onChange={(e) => {
-            const val = e.target.value
-            if (val === "") setIsBanned(undefined)
-            else setIsBanned(val === "true")
+            const val = e.target.value;
+            if (val === "") setIsBanned(undefined);
+            else setIsBanned(val === "true");
           }}
           className="h-9 px-3 border border-border rounded-lg text-xs bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
         >
@@ -147,7 +147,7 @@ export function AdminUsersPage() {
               </TableRow>
             ) : (
               users.map((u) => {
-                const isAdminAccount = u.role === "admin"
+                const isAdminAccount = u.role === "admin";
                 return (
                   <TableRow key={u.id}>
                     <TableCell>
@@ -190,7 +190,7 @@ export function AdminUsersPage() {
                       )}
                     </TableCell>
                   </TableRow>
-                )
+                );
               })
             )}
           </TableBody>
@@ -209,7 +209,7 @@ export function AdminUsersPage() {
         )}
       </Card>
     </div>
-  )
+  );
 }
 
-export default AdminUsersPage
+export default AdminUsersPage;

@@ -1,17 +1,15 @@
-import { useNavigate } from "react-router-dom"
-import { Button } from "@/components/ui/Button"
-import { Badge } from "@/components/ui/Badge"
+import { useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/Button";
+import { Badge } from "@/components/ui/Badge";
 
 export const NotFoundPage = () => {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-muted/20 px-4">
       <div className="text-center max-w-md space-y-4">
         {/* 404 Code */}
-        <h1 className="text-8xl font-black text-primary/20 tracking-tighter select-none">
-          404
-        </h1>
+        <h1 className="text-8xl font-black text-primary/20 tracking-tighter select-none">404</h1>
 
         <div className="flex justify-center -mt-6">
           <Badge variant="outline" className="text-xs px-3 py-1 font-semibold">
@@ -51,7 +49,7 @@ export const NotFoundPage = () => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default NotFoundPage
+export default NotFoundPage;

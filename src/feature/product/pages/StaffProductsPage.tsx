@@ -1,18 +1,18 @@
-import { useProducts } from "@/hooks/useProducts"
-import type { ProductStatus } from "@/types/product.type"
-import { ProductCard } from "../components/ProductCard"
-import { Button } from "@/components/ui/Button"
-import { SearchToolbar } from "@/components/SearchToolbar"
-import { Pagination } from "@/components/Pagination"
-import { EmptyState } from "@/components/EmptyState"
-import { Skeleton } from "@/components/ui/skeleton"
-import { Alert, AlertDescription } from "@/components/ui/alert"
-import { useNavigate } from "react-router-dom"
+import { useProducts } from "@/hooks/useProducts";
+import type { ProductStatus } from "@/types/product.type";
+import { ProductCard } from "../components/ProductCard";
+import { Button } from "@/components/ui/Button";
+import { SearchToolbar } from "@/components/SearchToolbar";
+import { Pagination } from "@/components/Pagination";
+import { EmptyState } from "@/components/EmptyState";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { useNavigate } from "react-router-dom";
 
 export function StaffProductsPage() {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const { products, meta, isLoading, error, search, setSearch, status, setStatus, setPage } =
-    useProducts(8)
+    useProducts(8);
 
   return (
     <div className="flex flex-col gap-6">
@@ -82,11 +82,7 @@ export function StaffProductsPage() {
           title="No products found"
           description="Try adjusting your search keywords or filter status."
           action={
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => navigate("/staff/products/create")}
-            >
+            <Button variant="outline" size="sm" onClick={() => navigate("/staff/products/create")}>
               Create Product
             </Button>
           }
@@ -116,7 +112,7 @@ export function StaffProductsPage() {
         />
       )}
     </div>
-  )
+  );
 }
 
-export default StaffProductsPage
+export default StaffProductsPage;

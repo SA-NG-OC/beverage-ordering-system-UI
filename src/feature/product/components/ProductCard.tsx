@@ -1,18 +1,18 @@
-import { ProductStatusBadge } from "@/components/ui/Badge"
-import { Button } from "@/components/ui/Button"
-import { Card, CardContent } from "@/components/ui/card"
-import type { ProductResponseDto } from "@/types/product.type"
-import { formatCurrency } from "@/utils/format"
-import { Link } from "react-router-dom"
+import { ProductStatusBadge } from "@/components/ui/Badge";
+import { Button } from "@/components/ui/Button";
+import { Card, CardContent } from "@/components/ui/card";
+import type { ProductResponseDto } from "@/types/product.type";
+import { formatCurrency } from "@/utils/format";
+import { Link } from "react-router-dom";
 
 interface ProductCardProps {
-  product: ProductResponseDto
-  onEdit?: (product: ProductResponseDto) => void
-  detailPath?: string
+  product: ProductResponseDto;
+  onEdit?: (product: ProductResponseDto) => void;
+  detailPath?: string;
 }
 
 export function ProductCard({ product, onEdit, detailPath }: ProductCardProps) {
-  const targetPath = detailPath || `/products/${product.id}`
+  const targetPath = detailPath || `/products/${product.id}`;
 
   return (
     <Card className="group flex flex-col justify-between overflow-hidden transition-all duration-200 hover:shadow-md border-border bg-card">
@@ -80,9 +80,7 @@ export function ProductCard({ product, onEdit, detailPath }: ProductCardProps) {
 
       {/* Price & Actions */}
       <div className="p-4 pt-0 flex items-center justify-between border-t border-border/50 mt-1">
-        <span className="text-base font-bold text-foreground">
-          {formatCurrency(product.price)}
-        </span>
+        <span className="text-base font-bold text-foreground">{formatCurrency(product.price)}</span>
         {onEdit ? (
           <Button variant="outline" size="sm" onClick={() => onEdit(product)}>
             Edit
@@ -96,5 +94,5 @@ export function ProductCard({ product, onEdit, detailPath }: ProductCardProps) {
         )}
       </div>
     </Card>
-  )
+  );
 }

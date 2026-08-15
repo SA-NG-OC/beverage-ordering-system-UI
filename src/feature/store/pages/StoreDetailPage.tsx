@@ -1,20 +1,20 @@
-import { useParams, Link } from "react-router-dom"
-import { useStoreDetail } from "@/hooks/useStoreDetail"
-import { useProducts } from "@/hooks/useProducts"
-import { useCategories } from "@/hooks/useCategories"
-import { Button } from "@/components/ui/Button"
-import { ProductCard } from "@/feature/product/components/ProductCard"
-import { SearchToolbar } from "@/components/SearchToolbar"
-import { Pagination } from "@/components/Pagination"
-import { EmptyState } from "@/components/EmptyState"
-import { Skeleton } from "@/components/ui/skeleton"
-import { Card, CardContent } from "@/components/ui/card"
-import { Alert, AlertDescription } from "@/components/ui/alert"
+import { useParams, Link } from "react-router-dom";
+import { useStoreDetail } from "@/hooks/useStoreDetail";
+import { useProducts } from "@/hooks/useProducts";
+import { useCategories } from "@/hooks/useCategories";
+import { Button } from "@/components/ui/Button";
+import { ProductCard } from "@/feature/product/components/ProductCard";
+import { SearchToolbar } from "@/components/SearchToolbar";
+import { Pagination } from "@/components/Pagination";
+import { EmptyState } from "@/components/EmptyState";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Card, CardContent } from "@/components/ui/card";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 export function StoreDetailPage() {
-  const { id } = useParams<{ id: string }>()
-  const { store, isLoading: isStoreLoading, error: storeError } = useStoreDetail(id)
-  const { categories } = useCategories()
+  const { id } = useParams<{ id: string }>();
+  const { store, isLoading: isStoreLoading, error: storeError } = useStoreDetail(id);
+  const { categories } = useCategories();
 
   // Filter & Search states for Store Products
   const {
@@ -31,7 +31,7 @@ export function StoreDetailPage() {
     isPublic: true,
     storeId: id,
     initialLimit: 8,
-  })
+  });
 
   if (isStoreLoading) {
     return (
@@ -43,7 +43,7 @@ export function StoreDetailPage() {
           ))}
         </div>
       </div>
-    )
+    );
   }
 
   if (storeError || !store) {
@@ -61,7 +61,7 @@ export function StoreDetailPage() {
           }
         />
       </div>
-    )
+    );
   }
 
   return (
@@ -223,7 +223,7 @@ export function StoreDetailPage() {
         )}
       </div>
     </div>
-  )
+  );
 }
 
-export default StoreDetailPage
+export default StoreDetailPage;

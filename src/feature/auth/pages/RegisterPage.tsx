@@ -1,20 +1,20 @@
-import { useState } from "react"
-import { useForm } from "react-hook-form"
-import { Link, useNavigate } from "react-router-dom"
-import { RegisterSchema, type RegisterDataForm } from "../schemas/registerSchema"
-import { authApi } from "@/api/authApi"
-import axios from "axios"
-import { Button } from "@/components/ui/Button"
-import { Input } from "@/components/ui/input"
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
-import { Alert, AlertDescription } from "@/components/ui/alert"
-import { FormField } from "@/components/FormField"
-import { zodResolver } from "@hookform/resolvers/zod"
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { Link, useNavigate } from "react-router-dom";
+import { RegisterSchema, type RegisterDataForm } from "../schemas/registerSchema";
+import { authApi } from "@/api/authApi";
+import axios from "axios";
+import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/input";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { FormField } from "@/components/FormField";
+import { zodResolver } from "@hookform/resolvers/zod";
 
 export function RegisterPage() {
-  const navigate = useNavigate()
-  const [serverError, setServerError] = useState<string | null>(null)
-  const [successMessage, setSuccessMessage] = useState<string | null>(null)
+  const navigate = useNavigate();
+  const [serverError, setServerError] = useState<string | null>(null);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   const {
     register,
@@ -22,36 +22,36 @@ export function RegisterPage() {
     formState: { errors, isSubmitting },
   } = useForm<RegisterDataForm>({
     resolver: zodResolver(RegisterSchema),
-  })
+  });
 
   const onSubmit = async (formData: RegisterDataForm) => {
     try {
-      setServerError(null)
-      setSuccessMessage(null)
+      setServerError(null);
+      setSuccessMessage(null);
 
       await authApi.register({
         fullName: formData.fullName,
         email: formData.email,
         password: formData.password,
-      })
+      });
 
-      setSuccessMessage("Registration successful! Redirecting to login...")
+      setSuccessMessage("Registration successful! Redirecting to login...");
       setTimeout(() => {
-        navigate("/login")
-      }, 1500)
+        navigate("/login");
+      }, 1500);
     } catch (error: unknown) {
       if (axios.isAxiosError(error)) {
-        const message = error.response?.data?.message
+        const message = error.response?.data?.message;
         setServerError(
           Array.isArray(message)
             ? message.join(", ")
             : (message ?? "An error occurred during registration. Please try again.")
-        )
+        );
       } else {
-        setServerError("An unexpected error occurred. Please try again.")
+        setServerError("An unexpected error occurred. Please try again.");
       }
     }
-  }
+  };
 
   return (
     <Card className="w-full max-w-md shadow-md border-border bg-card">
@@ -119,7 +119,7 @@ export function RegisterPage() {
         </p>
       </CardContent>
     </Card>
-  )
+  );
 }
 
-export default RegisterPage
+export default RegisterPage;

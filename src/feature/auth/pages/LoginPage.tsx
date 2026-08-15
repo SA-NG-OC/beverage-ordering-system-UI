@@ -1,20 +1,20 @@
-import { useState } from "react"
-import { useForm } from "react-hook-form"
-import { Link, useNavigate } from "react-router-dom"
-import { loginSchema, type LoginFormData } from "../schemas/loginSchemas"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { authApi } from "@/api/authApi"
-import { Role } from "@/types/enum/role.enum"
-import axios from "axios"
-import { Button } from "@/components/ui/Button"
-import { Input } from "@/components/ui/input"
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
-import { Alert, AlertDescription } from "@/components/ui/alert"
-import { FormField } from "@/components/FormField"
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { Link, useNavigate } from "react-router-dom";
+import { loginSchema, type LoginFormData } from "../schemas/loginSchemas";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { authApi } from "@/api/authApi";
+import { Role } from "@/types/enum/role.enum";
+import axios from "axios";
+import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/input";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { FormField } from "@/components/FormField";
 
 export function LoginPage() {
-  const navigate = useNavigate()
-  const [serverError, setServerError] = useState<string | null>(null)
+  const navigate = useNavigate();
+  const [serverError, setServerError] = useState<string | null>(null);
 
   const {
     register,
@@ -22,36 +22,36 @@ export function LoginPage() {
     formState: { errors, isSubmitting },
   } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
-  })
+  });
 
   const onSubmit = async (formData: LoginFormData) => {
     try {
-      setServerError(null)
-      const response = await authApi.login(formData)
-      const { accessToken, user } = response.data.data
+      setServerError(null);
+      const response = await authApi.login(formData);
+      const { accessToken, user } = response.data.data;
 
-      localStorage.setItem("accessToken", accessToken)
-      localStorage.setItem("user", JSON.stringify(user))
+      localStorage.setItem("accessToken", accessToken);
+      localStorage.setItem("user", JSON.stringify(user));
 
       // Điều hướng theo role
       if (user.role === Role.ADMIN) {
-        navigate("/admin/products")
+        navigate("/admin/products");
       } else if (user.role === Role.STAFF) {
-        navigate("/staff/products")
+        navigate("/staff/products");
       } else {
-        navigate("/products")
+        navigate("/products");
       }
     } catch (error: unknown) {
       if (axios.isAxiosError(error)) {
-        const message = error.response?.data?.message
+        const message = error.response?.data?.message;
         setServerError(
           Array.isArray(message)
             ? message.join(", ")
             : (message ?? "An error occurred. Please try again")
-        )
+        );
       }
     }
-  }
+  };
 
   return (
     <Card className="w-full max-w-md shadow-md border-border bg-card">
@@ -103,7 +103,7 @@ export function LoginPage() {
         </p>
       </CardContent>
     </Card>
-  )
+  );
 }
 
-export default LoginPage
+export default LoginPage;

@@ -1,15 +1,15 @@
-import * as React from "react"
-import { Label } from "@/components/ui/label"
-import { cn } from "@/lib/utils"
+import * as React from "react";
+import { Label } from "@/components/ui/label";
+import { cn } from "@/lib/utils";
 
 interface FormFieldProps {
-  label?: string
-  required?: boolean
-  error?: string
-  hint?: string
-  className?: string
-  children: React.ReactNode
-  id?: string
+  label?: string;
+  required?: boolean;
+  error?: string;
+  hint?: string;
+  className?: string;
+  children: React.ReactNode;
+  id?: string;
 }
 
 export function FormField({
@@ -34,10 +34,8 @@ export function FormField({
       )}
       {children}
       {error && (
-        <p className="text-xs font-medium text-destructive animate-in fade-in-50">
-          {error}
-        </p>
+        <p className="text-xs font-medium text-destructive animate-in fade-in-50">{error}</p>
       )}
     </div>
-  )
+  );
 }

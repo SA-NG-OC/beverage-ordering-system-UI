@@ -1,21 +1,21 @@
-import { ProductStatusBadge } from "@/components/ui/Badge"
-import { Button } from "@/components/ui/Button"
-import { Card, CardContent } from "@/components/ui/card"
-import { Skeleton } from "@/components/ui/skeleton"
-import { EmptyState } from "@/components/EmptyState"
-import { useAuth } from "@/hooks/useAuth"
-import { useProductDetail } from "@/hooks/useProductDetail"
-import { formatCurrency } from "@/utils/format"
-import { useNavigate, useParams } from "react-router-dom"
+import { ProductStatusBadge } from "@/components/ui/Badge";
+import { Button } from "@/components/ui/Button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
+import { EmptyState } from "@/components/EmptyState";
+import { useAuth } from "@/hooks/useAuth";
+import { useProductDetail } from "@/hooks/useProductDetail";
+import { formatCurrency } from "@/utils/format";
+import { useNavigate, useParams } from "react-router-dom";
 
 export function ProductDetailPage() {
-  const { id } = useParams<{ id: string }>()
-  const navigate = useNavigate()
-  const { isStaff, isAdmin } = useAuth()
+  const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
+  const { isStaff, isAdmin } = useAuth();
 
-  const canManage = isStaff || isAdmin
-  const isPublic = !canManage
-  const { product, isLoading, error } = useProductDetail(id, isPublic)
+  const canManage = isStaff || isAdmin;
+  const isPublic = !canManage;
+  const { product, isLoading, error } = useProductDetail(id, isPublic);
 
   if (isLoading) {
     return (
@@ -33,7 +33,7 @@ export function ProductDetailPage() {
           </div>
         </Card>
       </div>
-    )
+    );
   }
 
   if (error || !product) {
@@ -49,7 +49,7 @@ export function ProductDetailPage() {
           }
         />
       </div>
-    )
+    );
   }
 
   return (
@@ -68,7 +68,11 @@ export function ProductDetailPage() {
           stroke="currentColor"
           strokeWidth={2}
         >
-          <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"
+          />
         </svg>
         Back to Products
       </button>
@@ -159,11 +163,7 @@ export function ProductDetailPage() {
                   Admin View Only Mode
                 </div>
               ) : (
-                <Button
-                  variant="default"
-                  className="w-full"
-                  disabled={product.status !== "active"}
-                >
+                <Button variant="default" className="w-full" disabled={product.status !== "active"}>
                   {product.status === "active" ? "Add to Cart" : "Currently Unavailable"}
                 </Button>
               )}
@@ -172,7 +172,7 @@ export function ProductDetailPage() {
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }
 
-export default ProductDetailPage
+export default ProductDetailPage;

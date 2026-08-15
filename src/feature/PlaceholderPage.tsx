@@ -1,12 +1,12 @@
-import { Card, CardContent } from "@/components/ui/card"
-import { Badge } from "@/components/ui/Badge"
-import { Link } from "react-router-dom"
-import { Button } from "@/components/ui/Button"
+import { Card, CardContent } from "@/components/ui/card";
+import { Badge } from "@/components/ui/Badge";
+import { Link } from "react-router-dom";
+import { Button } from "@/components/ui/Button";
 
 interface PlaceholderPageProps {
-  title: string
-  description: string
-  tag?: string
+  title: string;
+  description: string;
+  tag?: string;
 }
 
 export function PlaceholderPage({ title, description, tag }: PlaceholderPageProps) {
@@ -39,5 +39,5 @@ export function PlaceholderPage({ title, description, tag }: PlaceholderPageProp
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }

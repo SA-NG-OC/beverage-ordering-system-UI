@@ -1,34 +1,34 @@
-import { useEffect, useState } from "react"
-import { useParams, useNavigate } from "react-router-dom"
-import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import axios from "axios"
+import { useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import axios from "axios";
 
-import { useProductDetail } from "@/hooks/useProductDetail"
-import { useCategories } from "@/hooks/useCategories"
-import { productApi } from "@/api/productApi"
-import { Button } from "@/components/ui/Button"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
-import { Alert, AlertDescription } from "@/components/ui/alert"
-import { Skeleton } from "@/components/ui/skeleton"
-import { EmptyState } from "@/components/EmptyState"
-import { FormField } from "@/components/FormField"
-import { updateProductSchema, type UpdateProductFormData } from "../schemas/productSchema"
-import { useMutation, useQueryClient } from "@tanstack/react-query"
+import { useProductDetail } from "@/hooks/useProductDetail";
+import { useCategories } from "@/hooks/useCategories";
+import { productApi } from "@/api/productApi";
+import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Skeleton } from "@/components/ui/skeleton";
+import { EmptyState } from "@/components/EmptyState";
+import { FormField } from "@/components/FormField";
+import { updateProductSchema, type UpdateProductFormData } from "../schemas/productSchema";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 export function EditProductPage() {
-  const { id } = useParams<{ id: string }>()
-  const navigate = useNavigate()
-  const [serverError, setServerError] = useState<string | null>(null)
-  const [successMsg, setSuccessMsg] = useState<string | null>(null)
+  const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
+  const [serverError, setServerError] = useState<string | null>(null);
+  const [successMsg, setSuccessMsg] = useState<string | null>(null);
 
   // Fetch categories for staff selection
-  const { categories, isLoading: isCategoriesLoading } = useCategories()
+  const { categories, isLoading: isCategoriesLoading } = useCategories();
 
   // Fetch product details for editing (isPublic = false for staff/admin)
-  const { product, isLoading, error: fetchError } = useProductDetail(id, false)
+  const { product, isLoading, error: fetchError } = useProductDetail(id, false);
 
   const {
     register,
@@ -37,15 +37,15 @@ export function EditProductPage() {
     formState: { errors, isSubmitting },
   } = useForm<UpdateProductFormData>({
     resolver: zodResolver(updateProductSchema),
-  })
+  });
 
   // Pre-fill form values when product data or categories list is loaded
   useEffect(() => {
     if (product) {
       const matchedCategory = categories.find(
         (c) => c.id === product.categoryId || c.name === product.categoryName
-      )
-      const selectedCategoryId = matchedCategory?.id || product.categoryId || ""
+      );
+      const selectedCategoryId = matchedCategory?.id || product.categoryId || "";
 
       reset({
         name: product.name,
@@ -54,15 +54,15 @@ export function EditProductPage() {
         status: product.status,
         imageUrl: product.imageUrl || "",
         categoryId: selectedCategoryId,
-      })
+      });
     }
-  }, [product, categories, reset])
+  }, [product, categories, reset]);
 
-  const queryClient = useQueryClient()
+  const queryClient = useQueryClient();
 
   const updateProductMutation = useMutation({
     mutationFn: async (formData: UpdateProductFormData) => {
-      if (!id) throw new Error("Missing Product ID")
+      if (!id) throw new Error("Missing Product ID");
       const response = await productApi.update(id, {
         name: formData.name,
         price: Number(formData.price),
@@ -70,39 +70,39 @@ export function EditProductPage() {
         description: formData.description || undefined,
         imageUrl: formData.imageUrl || undefined,
         categoryId: formData.categoryId || undefined,
-      })
-      return response.data.data
+      });
+      return response.data.data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["product-detail", id] })
-      queryClient.invalidateQueries({ queryKey: ["products"] })
+      queryClient.invalidateQueries({ queryKey: ["product-detail", id] });
+      queryClient.invalidateQueries({ queryKey: ["products"] });
     },
-  })
+  });
 
   const onSubmit = async (formData: UpdateProductFormData) => {
-    if (!id) return
+    if (!id) return;
 
     try {
-      setServerError(null)
-      setSuccessMsg(null)
+      setServerError(null);
+      setSuccessMsg(null);
 
-      await updateProductMutation.mutateAsync(formData)
+      await updateProductMutation.mutateAsync(formData);
 
-      setSuccessMsg("Product updated successfully! Redirecting...")
+      setSuccessMsg("Product updated successfully! Redirecting...");
       setTimeout(() => {
-        navigate(-1)
-      }, 1200)
+        navigate(-1);
+      }, 1200);
     } catch (err: unknown) {
       if (axios.isAxiosError(err)) {
-        const message = err.response?.data?.message
+        const message = err.response?.data?.message;
         setServerError(
           Array.isArray(message) ? message.join(", ") : message || "Failed to update product."
-        )
+        );
       } else {
-        setServerError("An unexpected error occurred.")
+        setServerError("An unexpected error occurred.");
       }
     }
-  }
+  };
 
   if (isLoading) {
     return (
@@ -115,7 +115,7 @@ export function EditProductPage() {
           <Skeleton className="h-24 w-full" />
         </Card>
       </div>
-    )
+    );
   }
 
   if (fetchError || !product) {
@@ -131,7 +131,7 @@ export function EditProductPage() {
           }
         />
       </div>
-    )
+    );
   }
 
   return (
@@ -150,7 +150,11 @@ export function EditProductPage() {
           stroke="currentColor"
           strokeWidth={2}
         >
-          <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"
+          />
         </svg>
         Cancel & Go Back
       </button>
@@ -223,9 +227,7 @@ export function EditProductPage() {
                   disabled={isCategoriesLoading}
                   className="w-full h-9 px-3 border border-input rounded-lg text-xs sm:text-sm bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
                 >
-                  <option value="">
-                    {isCategoriesLoading ? "Loading..." : "-- Category --"}
-                  </option>
+                  <option value="">{isCategoriesLoading ? "Loading..." : "-- Category --"}</option>
                   {categories.map((cat) => (
                     <option key={cat.id} value={cat.id}>
                       {cat.name}
@@ -286,7 +288,7 @@ export function EditProductPage() {
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }
 
-export default EditProductPage
+export default EditProductPage;

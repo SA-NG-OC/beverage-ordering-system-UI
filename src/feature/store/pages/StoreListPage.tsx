@@ -1,26 +1,17 @@
-import { useStores } from "@/hooks/useStores"
-import { StoreCard } from "../components/StoreCard"
-import { SearchToolbar } from "@/components/SearchToolbar"
-import { Pagination } from "@/components/Pagination"
-import { EmptyState } from "@/components/EmptyState"
-import { Skeleton } from "@/components/ui/skeleton"
-import { Alert, AlertDescription } from "@/components/ui/alert"
+import { useStores } from "@/hooks/useStores";
+import { StoreCard } from "../components/StoreCard";
+import { SearchToolbar } from "@/components/SearchToolbar";
+import { Pagination } from "@/components/Pagination";
+import { EmptyState } from "@/components/EmptyState";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 export function StoreListPage() {
-  const {
-    stores,
-    meta,
-    isLoading,
-    error,
-    search,
-    setSearch,
-    sortOrder,
-    setSortOrder,
-    setPage,
-  } = useStores({
-    initialLimit: 9,
-    isPublic: true,
-  })
+  const { stores, meta, isLoading, error, search, setSearch, sortOrder, setSortOrder, setPage } =
+    useStores({
+      initialLimit: 9,
+      isPublic: true,
+    });
 
   return (
     <div className="flex flex-col gap-6">
@@ -92,7 +83,7 @@ export function StoreListPage() {
         />
       )}
     </div>
-  )
+  );
 }
 
-export default StoreListPage
+export default StoreListPage;

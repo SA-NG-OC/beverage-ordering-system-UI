@@ -1,16 +1,16 @@
-import { useProducts } from "@/hooks/useProducts"
-import type { ProductStatus } from "@/types/product.type"
-import { ProductCard } from "../components/ProductCard"
-import { SearchToolbar } from "@/components/SearchToolbar"
-import { Pagination } from "@/components/Pagination"
-import { EmptyState } from "@/components/EmptyState"
-import { Skeleton } from "@/components/ui/skeleton"
-import { Alert, AlertDescription } from "@/components/ui/alert"
-import { Badge } from "@/components/ui/Badge"
+import { useProducts } from "@/hooks/useProducts";
+import type { ProductStatus } from "@/types/product.type";
+import { ProductCard } from "../components/ProductCard";
+import { SearchToolbar } from "@/components/SearchToolbar";
+import { Pagination } from "@/components/Pagination";
+import { EmptyState } from "@/components/EmptyState";
+import { Skeleton } from "@/components/ui/skeleton";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Badge } from "@/components/ui/Badge";
 
 export function AdminProductsPage() {
   const { products, meta, isLoading, error, search, setSearch, status, setStatus, setPage } =
-    useProducts({ initialLimit: 12, isPublic: false })
+    useProducts({ initialLimit: 12, isPublic: false });
 
   return (
     <div className="flex flex-col gap-6">
@@ -93,7 +93,7 @@ export function AdminProductsPage() {
         />
       )}
     </div>
-  )
+  );
 }
 
-export default AdminProductsPage
+export default AdminProductsPage;
