@@ -1,19 +1,17 @@
-import type { StoreResponseDto } from "./store.type";
-
 export type OrderStatus = "pending" | "preparing" | "completed" | "cancelled";
+export type PaymentMethod = "COD";
 
-export interface OrderItemDto {
+export interface CreateOrderItemDto {
   productId: string;
   quantity: number;
 }
 
 export interface CreateOrderDto {
   storeId: string;
-  items: OrderItemDto[];
   receiverName: string;
   receiverPhone: string;
   deliveryAddress: string;
-  note?: string;
+  items: CreateOrderItemDto[];
 }
 
 export interface CancelOrderDto {
@@ -21,40 +19,45 @@ export interface CancelOrderDto {
 }
 
 export interface UpdateOrderStatusDto {
-  status: "preparing" | "completed";
+  status: "pending" | "preparing" | "completed" | "cancelled";
 }
 
 export interface OrderItemResponseDto {
   id: string;
   productId: string;
   productName: string;
-  productPrice: number;
+  price: number;
   quantity: number;
-  subtotal: number;
+  lineTotal: number;
 }
 
 export interface OrderResponseDto {
   id: string;
+  orderCode: string;
   customerId: string;
   storeId: string;
-  store: StoreResponseDto;
-  items: OrderItemResponseDto[];
-  totalAmount: number;
-  status: OrderStatus;
   receiverName: string;
   receiverPhone: string;
   deliveryAddress: string;
-  note: string | null;
+  subtotal: number;
+  totalAmount: number;
+  paymentMethod: PaymentMethod;
+  status: OrderStatus;
   cancelReason: string | null;
+  items: OrderItemResponseDto[];
   createdAt: string;
   updatedAt: string;
 }
 
 export interface OrderHistoryResponseDto {
   id: string;
+  orderCode: string;
   storeId: string;
-  storeName: string;
+  subtotal: number;
   totalAmount: number;
+  paymentMethod: PaymentMethod;
   status: OrderStatus;
+  cancelReason: string | null;
   createdAt: string;
+  updatedAt: string;
 }

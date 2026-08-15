@@ -1,3 +1,6 @@
+import { useState } from "react";
+import { useDispatch } from "react-redux";
+import { useNavigate, useParams } from "react-router-dom";
 import { ProductStatusBadge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -5,17 +8,29 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { EmptyState } from "@/components/EmptyState";
 import { useAuth } from "@/hooks/useAuth";
 import { useProductDetail } from "@/hooks/useProductDetail";
+import { addToCart } from "@/feature/cart/cartSlice";
 import { formatCurrency } from "@/utils/format";
-import { useNavigate, useParams } from "react-router-dom";
+import type { AppDispatch } from "@/app/store";
 
 export function ProductDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const dispatch = useDispatch<AppDispatch>();
   const { isStaff, isAdmin } = useAuth();
+
+  const [quantity, setQuantity] = useState(1);
+  const [addedSuccess, setAddedSuccess] = useState(false);
 
   const canManage = isStaff || isAdmin;
   const isPublic = !canManage;
   const { product, isLoading, error } = useProductDetail(id, isPublic);
+
+  const handleAddToCart = () => {
+    if (!product || product.status !== "active") return;
+    dispatch(addToCart({ product, quantity }));
+    setAddedSuccess(true);
+    setTimeout(() => setAddedSuccess(false), 2000);
+  };
 
   if (isLoading) {
     return (
@@ -101,7 +116,7 @@ export function ProductDetailPage() {
                     strokeLinecap="round"
                     strokeLinejoin="round"
                     strokeWidth={1.5}
-                    d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                    d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
                   />
                 </svg>
                 <span className="text-xs font-medium">No Image Available</span>
@@ -149,7 +164,7 @@ export function ProductDetailPage() {
             </div>
 
             {/* Bottom Action Buttons */}
-            <div className="pt-4 border-t border-border flex items-center gap-3">
+            <div className="pt-4 border-t border-border flex flex-col gap-3">
               {isStaff ? (
                 <Button
                   variant="default"
@@ -163,9 +178,45 @@ export function ProductDetailPage() {
                   Admin View Only Mode
                 </div>
               ) : (
-                <Button variant="default" className="w-full" disabled={product.status !== "active"}>
-                  {product.status === "active" ? "Add to Cart" : "Currently Unavailable"}
-                </Button>
+                <div className="space-y-3">
+                  <div className="flex items-center gap-3">
+                    <span className="text-xs font-medium text-muted-foreground">Quantity:</span>
+                    <div className="flex items-center border border-border rounded-lg p-1 bg-card">
+                      <button
+                        type="button"
+                        onClick={() => setQuantity((q) => Math.max(1, q - 1))}
+                        className="w-7 h-7 flex items-center justify-center rounded hover:bg-muted text-xs font-semibold cursor-pointer"
+                        disabled={product.status !== "active"}
+                      >
+                        -
+                      </button>
+                      <span className="w-8 text-center text-xs font-bold text-foreground">
+                        {quantity}
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => setQuantity((q) => q + 1)}
+                        className="w-7 h-7 flex items-center justify-center rounded hover:bg-muted text-xs font-semibold cursor-pointer"
+                        disabled={product.status !== "active"}
+                      >
+                        +
+                      </button>
+                    </div>
+                  </div>
+
+                  <Button
+                    variant="default"
+                    className="w-full"
+                    disabled={product.status !== "active"}
+                    onClick={handleAddToCart}
+                  >
+                    {addedSuccess
+                      ? "Added to Cart!"
+                      : product.status === "active"
+                        ? `Add to Cart • ${formatCurrency(product.price * quantity)}`
+                        : "Currently Unavailable"}
+                  </Button>
+                </div>
               )}
             </div>
           </div>

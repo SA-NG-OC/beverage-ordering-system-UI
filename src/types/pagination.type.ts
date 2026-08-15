@@ -3,6 +3,8 @@ export interface PaginationMetaDto {
   limit: number;
   totalItems: number;
   totalPages: number;
+  hasNextPage?: boolean;
+  hasPrevPage?: boolean;
 }
 
 /** Wrapper chuẩn cho mọi API response */

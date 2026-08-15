@@ -1,4 +1,4 @@
-import * as React from "react";
+import { memo, type ReactNode } from "react";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 
@@ -6,11 +6,11 @@ interface SearchToolbarProps {
   search: string;
   onSearchChange: (value: string) => void;
   placeholder?: string;
-  children?: React.ReactNode;
+  children?: ReactNode;
   className?: string;
 }
 
-export function SearchToolbar({
+export const SearchToolbar = memo(function SearchToolbar({
   search,
   onSearchChange,
   placeholder = "Search...",
@@ -50,4 +50,6 @@ export function SearchToolbar({
       {children && <div className="flex flex-wrap items-center gap-2">{children}</div>}
     </div>
   );
-}
+});
+
+export default SearchToolbar;

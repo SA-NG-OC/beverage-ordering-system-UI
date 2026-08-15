@@ -1,9 +1,13 @@
+import React, { memo } from "react";
+import { useDispatch } from "react-redux";
+import { Link } from "react-router-dom";
 import { ProductStatusBadge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Card, CardContent } from "@/components/ui/card";
+import { addToCart } from "@/feature/cart/cartSlice";
 import type { ProductResponseDto } from "@/types/product.type";
 import { formatCurrency } from "@/utils/format";
-import { Link } from "react-router-dom";
+import type { AppDispatch } from "@/app/store";
 
 interface ProductCardProps {
   product: ProductResponseDto;
@@ -11,20 +15,32 @@ interface ProductCardProps {
   detailPath?: string;
 }
 
-export function ProductCard({ product, onEdit, detailPath }: ProductCardProps) {
+export const ProductCard = memo(function ProductCard({
+  product,
+  onEdit,
+  detailPath,
+}: ProductCardProps) {
+  const dispatch = useDispatch<AppDispatch>();
   const targetPath = detailPath || `/products/${product.id}`;
 
+  const handleAddToCart = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    dispatch(addToCart({ product, quantity: 1 }));
+  };
+
   return (
-    <Card className="group flex flex-col justify-between overflow-hidden transition-all duration-200 hover:shadow-md border-border bg-card">
+    <Card className="group flex flex-col justify-between overflow-hidden transition-all duration-200 hover:shadow-md border-border bg-card p-0 py-0 gap-0">
       <div>
-        {/* Product Image */}
-        <div className="relative w-full h-48 bg-muted overflow-hidden">
+        {/* Product Image - Full cover to the top and side borders */}
+        <div className="relative w-full h-52 bg-muted overflow-hidden">
           <Link to={targetPath} className="block w-full h-full">
             {product.imageUrl ? (
               <img
                 src={product.imageUrl}
                 alt={product.name}
                 className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                loading="lazy"
               />
             ) : (
               <div className="w-full h-full flex flex-col items-center justify-center text-muted-foreground bg-muted/60 p-4">
@@ -39,7 +55,7 @@ export function ProductCard({ product, onEdit, detailPath }: ProductCardProps) {
                     strokeLinecap="round"
                     strokeLinejoin="round"
                     strokeWidth={1.5}
-                    d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                    d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
                   />
                 </svg>
                 <span className="text-[11px] font-medium tracking-tight">No image</span>
@@ -86,13 +102,26 @@ export function ProductCard({ product, onEdit, detailPath }: ProductCardProps) {
             Edit
           </Button>
         ) : (
-          <Link to={targetPath}>
-            <Button variant="secondary" size="sm">
-              View
+          <div className="flex items-center gap-1.5">
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={product.status !== "active"}
+              onClick={handleAddToCart}
+              title="Add to cart"
+            >
+              + Add
             </Button>
-          </Link>
+            <Link to={targetPath}>
+              <Button variant="secondary" size="sm">
+                View
+              </Button>
+            </Link>
+          </div>
         )}
       </div>
     </Card>
   );
-}
+});
+
+export default ProductCard;
