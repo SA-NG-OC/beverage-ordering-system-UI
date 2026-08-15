@@ -5,7 +5,7 @@ const OpenAI = require("openai").default;
 const { Octokit } = require("@octokit/rest");
 
 const REPO_ROOT = process.cwd();
-const MAX_ITERATIONS = 8; // safety cap so we don't blow through the ~40 req/min free-tier limit
+const MAX_ITERATIONS = 800; // safety cap so we don't blow through the ~40 req/min free-tier limit
 
 // ---------- Tool implementations ----------
 // Every tool resolves paths against REPO_ROOT and refuses to leave it,

@@ -7,6 +7,10 @@ import { authApi } from "@/api/authApi";
 import { Role } from "@/types/enum/role.enum";
 import axios from "axios";
 import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/input";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { FormField } from "@/components/FormField";
 
 export function LoginPage() {
   const navigate = useNavigate();
@@ -40,7 +44,6 @@ export function LoginPage() {
     } catch (error: unknown) {
       if (axios.isAxiosError(error)) {
         const message = error.response?.data?.message;
-
         setServerError(
           Array.isArray(message)
             ? message.join(", ")
@@ -51,54 +54,56 @@ export function LoginPage() {
   };
 
   return (
-    <div className="w-full max-w-md bg-white rounded-2xl shadow-xl border border-gray-100 p-8">
-      <h1 className="text-2xl font-bold text-center mb-6">Login</h1>
-      {serverError && (
-        <div className="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm">
-          {serverError}
-        </div>
-      )}
+    <Card className="w-full max-w-md shadow-md border-border bg-card">
+      <CardHeader className="space-y-1 text-center">
+        <CardTitle className="text-xl font-bold tracking-tight">Login</CardTitle>
+        <CardDescription className="text-xs text-muted-foreground">
+          Enter your email and password to access your account
+        </CardDescription>
+      </CardHeader>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-        {/* email field */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
-          <input
-            type="email"
-            {...register("email")}
-            className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2
-                    ${errors.email ? "border-red-500 focus:ring-red-200" : "border-gray-300 focus:ring-blue-200"}`}
-            placeholder="customer@gmail.com"
-          />
-          {errors.email && <p className="mt-1 text-sm text-red-600">{errors.email.message}</p>}
-        </div>
+      <CardContent className="space-y-4">
+        {serverError && (
+          <Alert variant="destructive">
+            <AlertDescription className="text-xs">{serverError}</AlertDescription>
+          </Alert>
+        )}
 
-        {/* Password field */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Password</label>
-          <input
-            type="password"
-            {...register("password")}
-            className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2
-                        ${errors.password ? "border-red-500 focus:ring-red-200" : "border-gray-300 focus:ring-blue-200"}`}
-            placeholder="••••••"
-          />
-          {errors.password && (
-            <p className="mt-1 text-sm text-red-600">{errors.password.message}</p>
-          )}
-        </div>
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          <FormField label="Email" error={errors.email?.message} required id="email">
+            <Input
+              id="email"
+              type="email"
+              placeholder="name@example.com"
+              {...register("email")}
+              className="h-9 text-xs sm:text-sm"
+            />
+          </FormField>
 
-        {/* Submit Button */}
-        <Button type="submit" variant="primary" isLoading={isSubmitting} className="w-full">
-          Login
-        </Button>
-      </form>
-      <p className="mt-4 text-center text-sm text-gray-600">
-        Don't have an account yet?{" "}
-        <Link to="/register" className="text-blue-600 hover:underline">
-          Register
-        </Link>
-      </p>
-    </div>
+          <FormField label="Password" error={errors.password?.message} required id="password">
+            <Input
+              id="password"
+              type="password"
+              placeholder="••••••••"
+              {...register("password")}
+              className="h-9 text-xs sm:text-sm"
+            />
+          </FormField>
+
+          <Button type="submit" variant="default" isLoading={isSubmitting} className="w-full h-9">
+            Sign In
+          </Button>
+        </form>
+
+        <p className="text-center text-xs text-muted-foreground pt-2">
+          Don't have an account yet?{" "}
+          <Link to="/register" className="font-semibold text-primary hover:underline">
+            Register
+          </Link>
+        </p>
+      </CardContent>
+    </Card>
   );
 }
+
+export default LoginPage;

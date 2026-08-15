@@ -17,6 +17,7 @@ import { StoreDetailPage } from "@/feature/store/pages/StoreDetailPage";
 import AdminUsersPage from "@/feature/admin/pages/AdminUsersPage";
 import { AdminStoresPage } from "@/feature/admin/pages/AdminStoresPage";
 import { StaffStorePage } from "@/feature/staff/pages/StaffStorePage";
+import { PlaceholderPage } from "@/feature/PlaceholderPage";
 
 export const router = createBrowserRouter([
   // 1. Auth Routes (Public)
@@ -47,8 +48,26 @@ export const router = createBrowserRouter([
       {
         element: <MainLayout />,
         children: [
-          { path: "/profile", element: <h1>Profile View</h1> },
-          { path: "/orders", element: <h1>Orders View</h1> },
+          {
+            path: "/profile",
+            element: (
+              <PlaceholderPage
+                title="Customer Profile"
+                description="View and update your personal information, delivery addresses, and account security settings."
+                tag="Profile"
+              />
+            ),
+          },
+          {
+            path: "/orders",
+            element: (
+              <PlaceholderPage
+                title="Your Orders"
+                description="Track live beverage orders, view order history, and reorder your favorite drinks."
+                tag="Orders"
+              />
+            ),
+          },
         ],
       },
     ],
@@ -82,7 +101,16 @@ export const router = createBrowserRouter([
           { path: "/admin/products", element: <AdminProductsPage /> },
           { path: "/admin/products/:id", element: <ProductDetailPage /> },
           { path: "/admin/products/:id/edit", element: <EditProductPage /> },
-          { path: "/admin/dashboard", element: <h1>Admin Board View</h1> },
+          {
+            path: "/admin/dashboard",
+            element: (
+              <PlaceholderPage
+                title="System Analytics & Dashboard"
+                description="View system-wide revenue, active stores, order volume, and performance indicators."
+                tag="Dashboard"
+              />
+            ),
+          },
           {
             path: "/admin/users",
             element: <AdminUsersPage />,

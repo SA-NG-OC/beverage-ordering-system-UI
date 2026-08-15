@@ -12,14 +12,14 @@ export function MainLayout() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col justify-between font-sans">
+    <div className="min-h-screen bg-muted/20 flex flex-col justify-between font-sans">
       {/* Header Bar */}
-      <header className="sticky top-0 z-50 bg-white/90 backdrop-blur-md border-b border-gray-200/80 shadow-xs">
+      <header className="sticky top-0 z-50 bg-background/95 backdrop-blur-md border-b border-border shadow-xs">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
           {/* Left: Logo & Navigation */}
           <div className="flex items-center gap-8">
-            <Link to="/" className="flex items-center gap-3 group">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center text-white shadow-md shadow-blue-500/20 group-hover:scale-105 transition-transform">
+            <Link to="/" className="flex items-center gap-2.5 group">
+              <div className="w-9 h-9 rounded-lg bg-primary flex items-center justify-center text-primary-foreground shadow-xs group-hover:opacity-90 transition-opacity">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   className="w-5 h-5"
@@ -31,15 +31,15 @@ export function MainLayout() {
                   <path
                     strokeLinecap="round"
                     strokeLinejoin="round"
-                    d="M18.364 5.636l-3.536 3.536m0 0l-3.536 3.536M14.828 9.172l3.536 3.536M14.828 9.172L11.293 5.636m3.535 3.536L9.172 14.828m0 0L5.636 18.364m3.536-3.536l-3.536-3.536m3.536 3.536l3.536 3.536"
+                    d="M9.75 3.104v5.714a2.25 2.25 0 01-.659 1.591L5 14.5M9.75 3.104c-.251.023-.501.05-.75.082m.75-.082a24.301 24.301 0 014.5 0m0 0v5.714c0 .597.237 1.17.659 1.591L19.8 15.3M14.25 3.104c.251.023.501.05.75.082M19.8 15.3l-1.57.393A9.065 9.065 0 0112 15a9.065 9.065 0 00-6.23-.693L5 14.5m14.8.8l1.402 1.402c1.232 1.232.65 3.318-1.067 3.611A48.309 48.309 0 0112 21c-2.773 0-5.491-.235-8.135-.687-1.718-.293-2.3-2.379-1.067-3.61L5 14.5"
                   />
                 </svg>
               </div>
               <div>
-                <span className="text-lg font-extrabold text-gray-900 tracking-tight">
-                  Beverage<span className="text-blue-600">Order</span>
+                <span className="text-lg font-bold text-foreground tracking-tight">
+                  Beverage<span className="text-primary">Order</span>
                 </span>
-                <span className="block text-[10px] text-gray-400 font-semibold tracking-wider uppercase">
+                <span className="block text-[10px] text-muted-foreground font-medium uppercase tracking-wider">
                   Ordering System
                 </span>
               </div>
@@ -49,27 +49,23 @@ export function MainLayout() {
             <nav className="hidden md:flex items-center gap-1 text-sm font-medium">
               <Link
                 to="/stores"
-                className={`flex items-center gap-2 px-3 py-2 rounded-xl transition-all ${
+                className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
                   isActive("/stores") || isActive("/")
-                    ? "bg-blue-50 text-blue-600 font-semibold"
-                    : "text-gray-600 hover:text-gray-900 hover:bg-gray-100/80"
+                    ? "bg-primary/10 text-primary"
+                    : "text-muted-foreground hover:text-foreground hover:bg-muted"
                 }`}
               >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="w-4 h-4"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth={2}
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
-                  />
-                </svg>
-                <span>Stores</span>
+                Stores
+              </Link>
+              <Link
+                to="/products"
+                className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
+                  isActive("/products") && !isActive("/admin") && !isActive("/staff")
+                    ? "bg-primary/10 text-primary"
+                    : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                }`}
+              >
+                Products
               </Link>
 
               {/* Customer Routes */}
@@ -77,141 +73,143 @@ export function MainLayout() {
                 <>
                   <Link
                     to="/orders"
-                    className={`flex items-center gap-2 px-3 py-2 rounded-xl transition-all ${
+                    className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
                       isActive("/orders")
-                        ? "bg-blue-50 text-blue-600 font-semibold"
-                        : "text-gray-600 hover:text-gray-900 hover:bg-gray-100/80"
+                        ? "bg-primary/10 text-primary"
+                        : "text-muted-foreground hover:text-foreground hover:bg-muted"
                     }`}
                   >
-                    <span>My Orders</span>
+                    My Orders
                   </Link>
                   <Link
                     to="/profile"
-                    className={`flex items-center gap-2 px-3 py-2 rounded-xl transition-all ${
+                    className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
                       isActive("/profile")
-                        ? "bg-blue-50 text-blue-600 font-semibold"
-                        : "text-gray-600 hover:text-gray-900 hover:bg-gray-100/80"
+                        ? "bg-primary/10 text-primary"
+                        : "text-muted-foreground hover:text-foreground hover:bg-muted"
                     }`}
                   >
-                    <span>Profile</span>
+                    Profile
                   </Link>
                 </>
               )}
 
               {/* Staff Routes */}
               {isStaff && (
-                <div className="flex items-center gap-1 pl-2 border-l border-gray-200">
+                <div className="flex items-center gap-1 pl-2 border-l border-border">
+                  <span className="text-[10px] uppercase font-bold text-amber-600 bg-amber-50 dark:bg-amber-950/40 px-1.5 py-0.5 rounded mr-1">
+                    Staff
+                  </span>
                   <Link
                     to="/staff/store"
-                    className={`flex items-center gap-2 px-3 py-2 rounded-xl transition-all ${
+                    className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
                       isActive("/staff/store")
-                        ? "bg-amber-50 text-amber-800 font-semibold border border-amber-200/60"
-                        : "text-amber-700 hover:bg-amber-50/80"
+                        ? "bg-primary/10 text-primary"
+                        : "text-muted-foreground hover:text-foreground hover:bg-muted"
                     }`}
                   >
-                    <span>My Store</span>
+                    My Store
                   </Link>
                   <Link
                     to="/staff/products"
-                    className={`flex items-center gap-2 px-3 py-2 rounded-xl transition-all ${
+                    className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
                       isActive("/staff/products")
-                        ? "bg-amber-50 text-amber-800 font-semibold border border-amber-200/60"
-                        : "text-amber-700 hover:bg-amber-50/80"
+                        ? "bg-primary/10 text-primary"
+                        : "text-muted-foreground hover:text-foreground hover:bg-muted"
                     }`}
                   >
-                    <span>Products</span>
+                    Manage Products
                   </Link>
                 </div>
               )}
 
               {/* Admin Routes */}
               {isAdmin && (
-                <div className="flex items-center gap-1 pl-2 border-l border-gray-200">
+                <div className="flex items-center gap-1 pl-2 border-l border-border">
+                  <span className="text-[10px] uppercase font-bold text-primary bg-primary/10 px-1.5 py-0.5 rounded mr-1">
+                    Admin
+                  </span>
                   <Link
                     to="/admin/stores"
-                    className={`flex items-center gap-2 px-3 py-2 rounded-xl transition-all ${
+                    className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
                       isActive("/admin/stores")
-                        ? "bg-purple-50 text-purple-800 font-semibold border border-purple-200/60"
-                        : "text-purple-700 hover:bg-purple-50/80"
+                        ? "bg-primary/10 text-primary"
+                        : "text-muted-foreground hover:text-foreground hover:bg-muted"
                     }`}
                   >
-                    <span>Stores</span>
+                    Stores
                   </Link>
                   <Link
                     to="/admin/products"
-                    className={`flex items-center gap-2 px-3 py-2 rounded-xl transition-all ${
+                    className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
                       isActive("/admin/products")
-                        ? "bg-purple-50 text-purple-800 font-semibold border border-purple-200/60"
-                        : "text-purple-700 hover:bg-purple-50/80"
+                        ? "bg-primary/10 text-primary"
+                        : "text-muted-foreground hover:text-foreground hover:bg-muted"
                     }`}
                   >
-                    <span>Products</span>
-                  </Link>
-                  <Link
-                    to="/admin/dashboard"
-                    className={`flex items-center gap-2 px-3 py-2 rounded-xl transition-all ${
-                      isActive("/admin/dashboard")
-                        ? "bg-purple-50 text-purple-800 font-semibold border border-purple-200/60"
-                        : "text-purple-700 hover:bg-purple-50/80"
-                    }`}
-                  >
-                    <span>Dashboard</span>
+                    Products
                   </Link>
                   <Link
                     to="/admin/users"
-                    className={`flex items-center gap-2 px-3 py-2 rounded-xl transition-all ${
+                    className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
                       isActive("/admin/users")
-                        ? "bg-purple-50 text-purple-800 font-semibold border border-purple-200/60"
-                        : "text-purple-700 hover:bg-purple-50/80"
+                        ? "bg-primary/10 text-primary"
+                        : "text-muted-foreground hover:text-foreground hover:bg-muted"
                     }`}
                   >
-                    <span>Users</span>
+                    Users
+                  </Link>
+                  <Link
+                    to="/admin/dashboard"
+                    className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
+                      isActive("/admin/dashboard")
+                        ? "bg-primary/10 text-primary"
+                        : "text-muted-foreground hover:text-foreground hover:bg-muted"
+                    }`}
+                  >
+                    Dashboard
                   </Link>
                 </div>
               )}
             </nav>
           </div>
 
-          {/* Right: Cart & User Profile Section */}
+          {/* Right: User Profile & Auth Section */}
           <div className="flex items-center gap-3">
-            {/* Cart Button */}
             <Link
               to="/orders"
-              className="relative p-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-colors"
+              className="relative p-2 text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg transition-colors"
               title="Cart"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                className="h-6 w-6"
+                className="h-5 w-5"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
-                strokeWidth={2}
+                strokeWidth={1.75}
               >
                 <path
                   strokeLinecap="round"
                   strokeLinejoin="round"
-                  d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
+                  d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119.993z"
                 />
               </svg>
-              <span className="absolute top-1 right-1 w-4 h-4 bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
-                0
-              </span>
             </Link>
 
-            <div className="h-6 w-px bg-gray-200 hidden sm:block" />
+            <div className="h-5 w-px bg-border hidden sm:block" />
 
             {/* Auth Buttons / Profile info */}
             {isAuthenticated && user ? (
               <div className="flex items-center gap-3">
                 <div className="hidden sm:flex flex-col text-right">
-                  <span className="text-sm font-semibold text-gray-900 leading-tight">
+                  <span className="text-xs font-semibold text-foreground leading-tight">
                     {user.fullName}
                   </span>
-                  <span className="text-[11px] text-gray-500 capitalize">{user.role}</span>
+                  <span className="text-[10px] text-muted-foreground capitalize">{user.role}</span>
                 </div>
 
-                <div className="w-9 h-9 rounded-full bg-blue-100 text-blue-700 font-bold flex items-center justify-center text-sm border border-blue-200">
+                <div className="w-8 h-8 rounded-full bg-primary/10 text-primary font-bold flex items-center justify-center text-xs border border-primary/20">
                   {user.fullName ? user.fullName.charAt(0).toUpperCase() : "U"}
                 </div>
 
@@ -219,7 +217,7 @@ export function MainLayout() {
                   variant="ghost"
                   size="sm"
                   onClick={logout}
-                  className="text-red-600 hover:bg-red-50 hover:text-red-700"
+                  className="text-destructive hover:bg-destructive/10 text-xs h-8 px-2.5"
                 >
                   Logout
                 </Button>
@@ -232,7 +230,7 @@ export function MainLayout() {
                   </Button>
                 </Link>
                 <Link to="/register">
-                  <Button variant="primary" size="sm">
+                  <Button variant="default" size="sm">
                     Register
                   </Button>
                 </Link>
@@ -248,9 +246,9 @@ export function MainLayout() {
       </main>
 
       {/* Footer Section */}
-      <footer className="bg-white border-t border-gray-200/80 py-6 mt-12">
-        <div className="max-w-7xl mx-auto px-4 text-center text-xs text-gray-500 space-y-2">
-          <div className="flex items-center justify-center gap-2 text-sm font-bold text-gray-800">
+      <footer className="bg-background border-t border-border py-6 mt-12">
+        <div className="max-w-7xl mx-auto px-4 text-center text-xs text-muted-foreground space-y-1.5">
+          <div className="flex items-center justify-center gap-1.5 text-sm font-semibold text-foreground">
             <span>BeverageOrder</span>
           </div>
           <p>© {new Date().getFullYear()} Beverage Ordering System. All rights reserved.</p>

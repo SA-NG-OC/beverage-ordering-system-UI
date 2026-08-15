@@ -8,6 +8,11 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { productApi } from "@/api/productApi";
 import { useCategories } from "@/hooks/useCategories";
 import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { FormField } from "@/components/FormField";
 import { createProductSchema, type CreateProductFormData } from "../schemas/productSchema";
 
 export function CreateProductPage() {
@@ -77,177 +82,161 @@ export function CreateProductPage() {
   };
 
   return (
-    <div className="max-w-2xl mx-auto space-y-6">
+    <div className="max-w-2xl mx-auto space-y-4">
       {/* Back Button */}
       <button
+        type="button"
         onClick={() => navigate(-1)}
-        className="inline-flex items-center gap-2 text-sm font-medium text-gray-600 hover:text-blue-600 transition-colors"
+        className="inline-flex items-center gap-1.5 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors cursor-pointer"
       >
-        ← Cancel & Go Back
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          className="h-3.5 w-3.5"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          strokeWidth={2}
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"
+          />
+        </svg>
+        Cancel & Go Back
       </button>
 
       {/* Form Container */}
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 sm:p-8 space-y-6">
-        <div>
-          <h1 className="text-2xl font-extrabold text-gray-900">Add New Product</h1>
-          <p className="text-sm text-gray-500">Add a new beverage or item to your store menu.</p>
-        </div>
+      <Card className="border-border bg-card shadow-sm">
+        <CardHeader className="p-6 pb-4">
+          <CardTitle className="text-xl font-bold tracking-tight">Add New Product</CardTitle>
+          <CardDescription className="text-xs text-muted-foreground">
+            Add a new beverage or item to your store menu.
+          </CardDescription>
+        </CardHeader>
 
-        {/* Server Error Alert */}
-        {serverError && (
-          <div className="p-4 bg-red-50 border border-red-200 text-red-700 rounded-xl text-sm">
-            {serverError}
-          </div>
-        )}
+        <CardContent className="p-6 pt-0 space-y-4">
+          {/* Server Error Alert */}
+          {serverError && (
+            <Alert variant="destructive">
+              <AlertDescription className="text-xs">{serverError}</AlertDescription>
+            </Alert>
+          )}
 
-        {/* Success Alert */}
-        {successMsg && (
-          <div className="p-4 bg-green-50 border border-green-200 text-green-700 rounded-xl text-sm">
-            {successMsg}
-          </div>
-        )}
+          {/* Success Alert */}
+          {successMsg && (
+            <div className="p-3 bg-emerald-50 border border-emerald-200 text-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-400 dark:border-emerald-900 rounded-lg text-xs font-medium animate-in fade-in-50">
+              {successMsg}
+            </div>
+          )}
 
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-          {/* Product Name */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Product Name <span className="text-red-500">*</span>
-            </label>
-            <input
-              type="text"
-              {...register("name")}
-              className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 text-sm ${
-                errors.name
-                  ? "border-red-500 focus:ring-red-200"
-                  : "border-gray-300 focus:ring-blue-200"
-              }`}
-              placeholder="e.g. Brown Sugar Milk Tea"
-            />
-            {errors.name && <p className="mt-1 text-xs text-red-600">{errors.name.message}</p>}
-          </div>
-
-          {/* Category Dropdown */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Category <span className="text-red-500">*</span>
-            </label>
-            <select
-              {...register("categoryId")}
-              disabled={isCategoriesLoading}
-              className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 text-sm bg-white ${
-                errors.categoryId
-                  ? "border-red-500 focus:ring-red-200"
-                  : "border-gray-300 focus:ring-blue-200"
-              }`}
-            >
-              <option value="">
-                {isCategoriesLoading ? "Loading categories..." : "-- Select Category --"}
-              </option>
-              {categories.map((cat) => (
-                <option key={cat.id} value={cat.id}>
-                  {cat.name}
-                </option>
-              ))}
-            </select>
-            {errors.categoryId && (
-              <p className="mt-1 text-xs text-red-600">{errors.categoryId.message}</p>
-            )}
-          </div>
-
-          {/* Price & Status Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {/* Price */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
-                Price (VND) <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="number"
-                step="1000"
-                {...register("price", { valueAsNumber: true })}
-                className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 text-sm ${
-                  errors.price
-                    ? "border-red-500 focus:ring-red-200"
-                    : "border-gray-300 focus:ring-blue-200"
-                }`}
-                placeholder="35000"
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+            {/* Product Name */}
+            <FormField label="Product Name" error={errors.name?.message} required id="name">
+              <Input
+                id="name"
+                type="text"
+                placeholder="e.g. Brown Sugar Milk Tea"
+                {...register("name")}
+                className="h-9 text-xs sm:text-sm"
               />
-              {errors.price && <p className="mt-1 text-xs text-red-600">{errors.price.message}</p>}
-            </div>
+            </FormField>
 
-            {/* Status */}
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
+            {/* Category Dropdown */}
+            <FormField label="Category" error={errors.categoryId?.message} required id="categoryId">
               <select
-                {...register("status")}
-                className={`w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 text-sm bg-white ${
-                  errors.status
-                    ? "border-red-500 focus:ring-red-200"
-                    : "border-gray-300 focus:ring-blue-200"
-                }`}
+                id="categoryId"
+                {...register("categoryId")}
+                disabled={isCategoriesLoading}
+                className="w-full h-9 px-3 border border-input rounded-lg text-xs sm:text-sm bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
               >
-                <option value="active">Active (Selling)</option>
-                <option value="out_of_stock">Out of Stock</option>
-                <option value="hidden">Hidden</option>
+                <option value="">
+                  {isCategoriesLoading ? "Loading categories..." : "-- Select Category --"}
+                </option>
+                {categories.map((cat) => (
+                  <option key={cat.id} value={cat.id}>
+                    {cat.name}
+                  </option>
+                ))}
               </select>
-              {errors.status && (
-                <p className="mt-1 text-xs text-red-600">{errors.status.message}</p>
-              )}
+            </FormField>
+
+            {/* Price & Status Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <FormField label="Price (VND)" error={errors.price?.message} required id="price">
+                <Input
+                  id="price"
+                  type="number"
+                  step="1000"
+                  placeholder="35000"
+                  {...register("price", { valueAsNumber: true })}
+                  className="h-9 text-xs sm:text-sm"
+                />
+              </FormField>
+
+              <FormField label="Status" error={errors.status?.message} id="status">
+                <select
+                  id="status"
+                  {...register("status")}
+                  className="w-full h-9 px-3 border border-input rounded-lg text-xs sm:text-sm bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+                >
+                  <option value="active">Active (Selling)</option>
+                  <option value="out_of_stock">Out of Stock</option>
+                  <option value="hidden">Hidden</option>
+                </select>
+              </FormField>
             </div>
-          </div>
 
-          {/* Description */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
-            <textarea
-              rows={4}
-              {...register("description")}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-200 text-sm"
-              placeholder="Milk tea with brown sugar pearls, size M..."
-            />
-            {errors.description && (
-              <p className="mt-1 text-xs text-red-600">{errors.description.message}</p>
-            )}
-          </div>
+            {/* Description */}
+            <FormField label="Description" error={errors.description?.message} id="description">
+              <Textarea
+                id="description"
+                rows={3}
+                placeholder="Milk tea with brown sugar pearls, size M..."
+                {...register("description")}
+                className="text-xs sm:text-sm resize-none"
+              />
+            </FormField>
 
-          {/* Image URL */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Image URL</label>
-            <input
-              type="text"
-              {...register("imageUrl")}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-200 text-sm"
-              placeholder="/uploads/products/example.jpg"
-            />
-            {errors.imageUrl && (
-              <p className="mt-1 text-xs text-red-600">{errors.imageUrl.message}</p>
-            )}
-          </div>
+            {/* Image URL */}
+            <FormField label="Image URL" error={errors.imageUrl?.message} id="imageUrl">
+              <Input
+                id="imageUrl"
+                type="text"
+                placeholder="https://example.com/image.jpg"
+                {...register("imageUrl")}
+                className="h-9 text-xs sm:text-sm"
+              />
+            </FormField>
 
-          {/* Action Buttons */}
-          <div className="pt-4 border-t border-gray-100 flex items-center justify-end gap-3">
-            <Button type="button" variant="secondary" onClick={() => reset()}>
-              Reset
-            </Button>
+            {/* Action Buttons */}
+            <div className="pt-3 border-t border-border flex items-center justify-end gap-2.5">
+              <Button type="button" variant="outline" size="sm" onClick={() => reset()}>
+                Reset
+              </Button>
 
-            <Button
-              type="button"
-              variant="secondary"
-              onClick={() => navigate(-1)}
-              disabled={isSubmitting}
-            >
-              Cancel
-            </Button>
-            <Button
-              type="submit"
-              variant="primary"
-              isLoading={isSubmitting || createProductMutation.isPending}
-            >
-              Create Product
-            </Button>
-          </div>
-        </form>
-      </div>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => navigate(-1)}
+                disabled={isSubmitting}
+              >
+                Cancel
+              </Button>
+
+              <Button
+                type="submit"
+                variant="default"
+                size="sm"
+                isLoading={isSubmitting || createProductMutation.isPending}
+              >
+                Create Product
+              </Button>
+            </div>
+          </form>
+        </CardContent>
+      </Card>
     </div>
   );
 }
