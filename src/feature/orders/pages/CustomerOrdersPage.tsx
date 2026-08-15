@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, lazy, Suspense, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { useCustomerOrders, useCancelCustomerOrder } from "@/hooks/useOrders";
 import { OrderStatusBadge } from "@/components/ui/Badge";
@@ -8,9 +8,12 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { EmptyState } from "@/components/EmptyState";
 import { Pagination } from "@/components/Pagination";
 import { SearchToolbar } from "@/components/SearchToolbar";
-import { CancelOrderModal } from "../components/CancelOrderModal";
 import { formatCurrency, formatDateTime } from "@/utils/format";
 import type { OrderStatus } from "@/types/order.type";
+
+const CancelOrderModal = lazy(() =>
+  import("../components/CancelOrderModal").then((m) => ({ default: m.CancelOrderModal }))
+);
 
 const STATUS_TABS: { label: string; value: OrderStatus | "all" }[] = [
   { label: "All Orders", value: "all" },
@@ -32,17 +35,24 @@ export function CustomerOrdersPage() {
     error: cancelApiError,
   } = useCancelCustomerOrder();
 
-  const handleConfirmCancel = (reason: string) => {
-    if (!cancelTarget) return;
-    cancelOrder(
-      { id: cancelTarget.id, data: { cancelReason: reason } },
-      {
-        onSuccess: () => {
-          setCancelTarget(null);
-        },
-      }
-    );
-  };
+  const handleConfirmCancel = useCallback(
+    (reason: string) => {
+      if (!cancelTarget) return;
+      cancelOrder(
+        { id: cancelTarget.id, data: { cancelReason: reason } },
+        {
+          onSuccess: () => {
+            setCancelTarget(null);
+          },
+        }
+      );
+    },
+    [cancelTarget, cancelOrder]
+  );
+
+  const handleCloseCancelModal = useCallback(() => {
+    setCancelTarget(null);
+  }, []);
 
   const cancelErrorMessage = cancelApiError
     ? (cancelApiError as { response?: { data?: { message?: string } } }).response?.data?.message ||
@@ -195,17 +205,19 @@ export function CustomerOrdersPage() {
         />
       )}
 
-      {/* Cancel Order Modal */}
+      {/* Lazy Cancel Order Modal */}
       {cancelTarget && (
-        <CancelOrderModal
-          isOpen={!!cancelTarget}
-          orderId={cancelTarget.id}
-          orderCode={cancelTarget.code}
-          isPending={isCancelling}
-          error={cancelErrorMessage}
-          onClose={() => setCancelTarget(null)}
-          onConfirm={handleConfirmCancel}
-        />
+        <Suspense fallback={null}>
+          <CancelOrderModal
+            isOpen={!!cancelTarget}
+            orderId={cancelTarget.id}
+            orderCode={cancelTarget.code}
+            isPending={isCancelling}
+            error={cancelErrorMessage}
+            onClose={handleCloseCancelModal}
+            onConfirm={handleConfirmCancel}
+          />
+        </Suspense>
       )}
     </div>
   );

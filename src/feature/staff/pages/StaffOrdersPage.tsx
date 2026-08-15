@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, lazy, Suspense, useCallback } from "react";
 import {
   useStaffOrders,
   useUpdateStaffOrderStatus,
@@ -27,9 +27,14 @@ import {
   DialogTitle,
   DialogDescription,
 } from "@/components/ui/dialog";
-import { CancelOrderModal } from "@/feature/orders/components/CancelOrderModal";
 import { formatCurrency, formatDateTime } from "@/utils/format";
 import type { OrderResponseDto, OrderStatus } from "@/types/order.type";
+
+const CancelOrderModal = lazy(() =>
+  import("@/feature/orders/components/CancelOrderModal").then((m) => ({
+    default: m.CancelOrderModal,
+  }))
+);
 
 const STATUS_TABS: { label: string; value: OrderStatus | "all" }[] = [
   { label: "All Orders", value: "all" },
@@ -56,37 +61,47 @@ export function StaffOrdersPage() {
     error: cancelApiError,
   } = useCancelStaffOrder();
 
-  const handleUpdateStatus = (id: string, newStatus: "preparing" | "completed") => {
-    setUpdatingOrderId(id);
-    updateStatus(
-      { id, data: { status: newStatus } },
-      {
-        onSuccess: (updated) => {
-          if (selectedOrder && selectedOrder.id === updated.id) {
-            setSelectedOrder(updated);
-          }
-        },
-        onSettled: () => {
-          setUpdatingOrderId(null);
-        },
-      }
-    );
-  };
+  const handleUpdateStatus = useCallback(
+    (id: string, newStatus: "preparing" | "completed") => {
+      setUpdatingOrderId(id);
+      updateStatus(
+        { id, data: { status: newStatus } },
+        {
+          onSuccess: (updated) => {
+            if (selectedOrder && selectedOrder.id === updated.id) {
+              setSelectedOrder(updated);
+            }
+          },
+          onSettled: () => {
+            setUpdatingOrderId(null);
+          },
+        }
+      );
+    },
+    [updateStatus, selectedOrder]
+  );
 
-  const handleConfirmCancel = (reason: string) => {
-    if (!cancelTarget) return;
-    cancelOrder(
-      { id: cancelTarget.id, data: { cancelReason: reason } },
-      {
-        onSuccess: () => {
-          setCancelTarget(null);
-          if (selectedOrder && selectedOrder.id === cancelTarget.id) {
-            setSelectedOrder(null);
-          }
-        },
-      }
-    );
-  };
+  const handleConfirmCancel = useCallback(
+    (reason: string) => {
+      if (!cancelTarget) return;
+      cancelOrder(
+        { id: cancelTarget.id, data: { cancelReason: reason } },
+        {
+          onSuccess: () => {
+            setCancelTarget(null);
+            if (selectedOrder && selectedOrder.id === cancelTarget.id) {
+              setSelectedOrder(null);
+            }
+          },
+        }
+      );
+    },
+    [cancelTarget, cancelOrder, selectedOrder]
+  );
+
+  const handleCloseCancel = useCallback(() => {
+    setCancelTarget(null);
+  }, []);
 
   const cancelErrorMessage = cancelApiError
     ? (cancelApiError as { response?: { data?: { message?: string } } }).response?.data?.message ||
@@ -469,17 +484,19 @@ export function StaffOrdersPage() {
         </Dialog>
       )}
 
-      {/* Cancel Order Modal */}
+      {/* Lazy Cancel Order Modal */}
       {cancelTarget && (
-        <CancelOrderModal
-          isOpen={!!cancelTarget}
-          orderId={cancelTarget.id}
-          orderCode={cancelTarget.code}
-          isPending={isCancelling}
-          error={cancelErrorMessage}
-          onClose={() => setCancelTarget(null)}
-          onConfirm={handleConfirmCancel}
-        />
+        <Suspense fallback={null}>
+          <CancelOrderModal
+            isOpen={!!cancelTarget}
+            orderId={cancelTarget.id}
+            orderCode={cancelTarget.code}
+            isPending={isCancelling}
+            error={cancelErrorMessage}
+            onClose={handleCloseCancel}
+            onConfirm={handleConfirmCancel}
+          />
+        </Suspense>
       )}
     </div>
   );

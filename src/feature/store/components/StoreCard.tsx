@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { Link } from "react-router-dom";
 import type { StoreResponseDto } from "@/types/store.type";
 import { Button } from "@/components/ui/Button";
@@ -8,7 +9,7 @@ interface StoreCardProps {
   store: StoreResponseDto;
 }
 
-export function StoreCard({ store }: StoreCardProps) {
+export const StoreCard = memo(function StoreCard({ store }: StoreCardProps) {
   return (
     <Card className="group relative flex flex-col justify-between overflow-hidden transition-all duration-200 hover:shadow-md border-border bg-card">
       <CardContent className="p-5 space-y-4">
@@ -120,6 +121,6 @@ export function StoreCard({ store }: StoreCardProps) {
       </div>
     </Card>
   );
-}
+});
 
 export default StoreCard;

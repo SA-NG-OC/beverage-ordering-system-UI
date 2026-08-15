@@ -1,3 +1,4 @@
+import React, { memo } from "react";
 import { useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
 import { ProductStatusBadge } from "@/components/ui/Badge";
@@ -14,7 +15,11 @@ interface ProductCardProps {
   detailPath?: string;
 }
 
-export function ProductCard({ product, onEdit, detailPath }: ProductCardProps) {
+export const ProductCard = memo(function ProductCard({
+  product,
+  onEdit,
+  detailPath,
+}: ProductCardProps) {
   const dispatch = useDispatch<AppDispatch>();
   const targetPath = detailPath || `/products/${product.id}`;
 
@@ -35,6 +40,7 @@ export function ProductCard({ product, onEdit, detailPath }: ProductCardProps) {
                 src={product.imageUrl}
                 alt={product.name}
                 className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                loading="lazy"
               />
             ) : (
               <div className="w-full h-full flex flex-col items-center justify-center text-muted-foreground bg-muted/60 p-4">
@@ -116,6 +122,6 @@ export function ProductCard({ product, onEdit, detailPath }: ProductCardProps) {
       </div>
     </Card>
   );
-}
+});
 
 export default ProductCard;

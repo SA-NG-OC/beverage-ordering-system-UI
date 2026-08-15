@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { Button } from "@/components/ui/Button";
 import { cn } from "@/lib/utils";
 
@@ -11,7 +12,7 @@ interface PaginationProps {
   className?: string;
 }
 
-export function Pagination({
+export const Pagination = memo(function Pagination({
   page,
   totalPages,
   totalItems,
@@ -64,4 +65,6 @@ export function Pagination({
       </div>
     </div>
   );
-}
+});
+
+export default Pagination;

@@ -1,10 +1,13 @@
-import { useState } from "react";
+import { useState, lazy, Suspense, useCallback } from "react";
 import { Link, Outlet, useLocation } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/Button";
 import { selectCartCount } from "@/feature/cart/cartSlice";
-import { CartModal } from "@/feature/cart/components/CartModal";
+
+const CartModal = lazy(() =>
+  import("@/feature/cart/components/CartModal").then((m) => ({ default: m.CartModal }))
+);
 
 export function MainLayout() {
   const { user, isAuthenticated, logout, isAdmin, isStaff, isCustomer } = useAuth();
@@ -12,10 +15,16 @@ export function MainLayout() {
   const cartCount = useSelector(selectCartCount);
   const [isCartOpen, setIsCartOpen] = useState(false);
 
-  const isActive = (path: string) => {
-    if (path === "/") return location.pathname === "/";
-    return location.pathname.startsWith(path);
-  };
+  const handleOpenCart = useCallback(() => setIsCartOpen(true), []);
+  const handleCloseCart = useCallback(() => setIsCartOpen(false), []);
+
+  const isActive = useCallback(
+    (path: string) => {
+      if (path === "/") return location.pathname === "/";
+      return location.pathname.startsWith(path);
+    },
+    [location.pathname]
+  );
 
   return (
     <div className="min-h-screen bg-muted/20 flex flex-col justify-between font-sans">
@@ -205,7 +214,7 @@ export function MainLayout() {
             {/* Cart Button */}
             <button
               type="button"
-              onClick={() => setIsCartOpen(true)}
+              onClick={handleOpenCart}
               className="relative p-2 text-muted-foreground hover:text-foreground hover:bg-muted rounded-lg transition-colors cursor-pointer"
               title="View Cart"
             >
@@ -288,8 +297,12 @@ export function MainLayout() {
         </div>
       </footer>
 
-      {/* Global Cart Modal */}
-      {isCartOpen && <CartModal isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />}
+      {/* Global Cart Modal - Lazy loaded on-demand */}
+      {isCartOpen && (
+        <Suspense fallback={null}>
+          <CartModal isOpen={isCartOpen} onClose={handleCloseCart} />
+        </Suspense>
+      )}
     </div>
   );
 }

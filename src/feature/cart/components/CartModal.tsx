@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, lazy, Suspense, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import {
@@ -19,10 +19,14 @@ import {
   removeFromCart,
   clearCart,
 } from "@/feature/cart/cartSlice";
-import { CheckoutModal } from "./CheckoutModal";
 import { useAuth } from "@/hooks/useAuth";
 import { formatCurrency } from "@/utils/format";
 import type { AppDispatch } from "@/app/store";
+
+// Lazy load CheckoutModal on demand
+const CheckoutModal = lazy(() =>
+  import("./CheckoutModal").then((m) => ({ default: m.CheckoutModal }))
+);
 
 interface CartModalProps {
   isOpen: boolean;
@@ -39,9 +43,18 @@ export function CartModal({ isOpen, onClose }: CartModalProps) {
 
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
 
-  const handleOpenCheckout = () => {
+  const handleOpenCheckout = useCallback(() => {
     setIsCheckoutOpen(true);
-  };
+  }, []);
+
+  const handleCloseCheckout = useCallback(() => {
+    setIsCheckoutOpen(false);
+    onClose();
+  }, [onClose]);
+
+  const handleClearCart = useCallback(() => {
+    dispatch(clearCart());
+  }, [dispatch]);
 
   return (
     <>
@@ -57,7 +70,7 @@ export function CartModal({ isOpen, onClose }: CartModalProps) {
                   variant="ghost"
                   size="xs"
                   className="text-xs text-muted-foreground hover:text-destructive"
-                  onClick={() => dispatch(clearCart())}
+                  onClick={handleClearCart}
                 >
                   Clear all
                 </Button>
@@ -75,14 +88,7 @@ export function CartModal({ isOpen, onClose }: CartModalProps) {
                 title="Your cart is empty"
                 description="Explore our menu and add some refreshing drinks to get started!"
                 action={
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => {
-                      onClose();
-                    }}
-                    asChild
-                  >
+                  <Button variant="outline" size="sm" onClick={onClose} asChild>
                     <Link to="/products">Browse Drinks</Link>
                   </Button>
                 }
@@ -99,6 +105,7 @@ export function CartModal({ isOpen, onClose }: CartModalProps) {
                         src={product.imageUrl}
                         alt={product.name}
                         className="w-full h-full object-cover"
+                        loading="lazy"
                       />
                     ) : (
                       <svg
@@ -190,14 +197,7 @@ export function CartModal({ isOpen, onClose }: CartModalProps) {
 
               {!isAuthenticated ? (
                 <div className="space-y-2">
-                  <Button
-                    variant="default"
-                    className="w-full"
-                    onClick={() => {
-                      onClose();
-                    }}
-                    asChild
-                  >
+                  <Button variant="default" className="w-full" onClick={onClose} asChild>
                     <Link to="/login">Log In to Order</Link>
                   </Button>
                   <p className="text-[11px] text-center text-muted-foreground">
@@ -214,16 +214,14 @@ export function CartModal({ isOpen, onClose }: CartModalProps) {
         </DialogContent>
       </Dialog>
 
-      {/* Checkout Modal */}
+      {/* Lazy Checkout Modal */}
       {isCheckoutOpen && (
-        <CheckoutModal
-          isOpen={isCheckoutOpen}
-          onClose={() => {
-            setIsCheckoutOpen(false);
-            onClose();
-          }}
-        />
+        <Suspense fallback={null}>
+          <CheckoutModal isOpen={isCheckoutOpen} onClose={handleCloseCheckout} />
+        </Suspense>
       )}
     </>
   );
 }
+
+export default CartModal;
